@@ -1,0 +1,36 @@
+{
+  "name": "pdfengine",
+  "version": "0.1.0",
+  "main": "index.js",
+  "author": "Nicholas Elliott",
+  "license": "NONE",
+  "private": true,
+  "scripts": {
+    "tsc": "tsc",
+    "start": "ts-node-dev --respawn --transpileOnly ./src/index.ts",
+    "build": "tsc",
+    "debug": "cross-env TZ=UTC NODE_ENV=development tsnd --inspect --respawn src/index.ts",
+    "release": "tsc && node ./dist/index.js",
+    "profile": "tsc && node --prof ./dist/index.js"
+  },
+  "dependencies": {
+    "@react-pdf/renderer": "^1.6.8",
+    "cors": "^2.8.5",
+    "fonts": "^0.0.2",
+    "react": "^16.12.0",
+    "uuid": "^3.3.3",
+    "vm2": "^3.8.4",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.11",
+    "@types/react": "^16.9.12",
+    "@types/request": "^2.48.3",
+    "@types/uuid": "^3.4.6",
+    "cross-env": "^6.0.3",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "tslint": "^6.0.0",
+    "tslint-react": "^4.2.0",
+    "typescript": "^3.7.2"
+  }
+}

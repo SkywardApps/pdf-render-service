@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/83339b8a-5e5b-4e2b-9416-75933a3ccf55/resourceGroups/skywardappcompany.com/providers/Microsoft.Web/sites/pdf-render-service",
+    "appService.deploySubpath": ""
+}
