@@ -3,9 +3,13 @@ name: Build and Publish
 on:
   # run it on push to the default repository branch
   push:
-    branches: [mainline]
+    branches: 
+      - mainline
+      - ci
   # run it during pull request
   pull_request:
+    branches: 
+      - '**'
 
 jobs:
   # define job to build and publish docker image
