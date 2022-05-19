@@ -3,7 +3,7 @@ name: Build and Publish
 on:
   # run it on push to the default repository branch
   push:
-    branches: [ci]
+    branches: [mainline]
   # run it during pull request
   pull_request:
 
@@ -40,7 +40,7 @@ jobs:
           tags: |
             ghcr.io/skywardapps/pdf-render-service:latest
           # build on feature branches, push only on main branch
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: ${{ github.ref == 'refs/heads/mainline' }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
