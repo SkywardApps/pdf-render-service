@@ -17,7 +17,6 @@ FROM bmz_base as bmz_debug
 FROM node:14 as bmz_build
 
 WORKDIR /src
-RUN curl -sfL https://install.goreleaser.com/github.com/tj/node-prune.sh | bash -s -- -b /usr/local/bin
 COPY package.json .
 COPY yarn.lock .
 COPY tslint.json .
@@ -32,7 +31,7 @@ RUN yarn build
 RUN npm prune --production
 
 # run node prune
-RUN /usr/local/bin/node-prune
+RUN npx node-prune
 
 FROM bmz_base as bmz_release
 
