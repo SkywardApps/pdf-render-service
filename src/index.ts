@@ -30,6 +30,33 @@ Font.register({
   ]
 });
 
+Font.register({
+  family: 'Teko',
+  fonts: [
+    {
+      src: './fonts/Teko/Teko-Light.ttf',
+      fontWeight: 300
+    },
+    {
+      src: './fonts/Teko/Teko-Regular.ttf',
+      fontWeight: 'normal', // Default, does not have to be specified
+      fontStyle: 'normal',  // Default, does not have to be specified
+    },
+    {
+      src: './fonts/Teko/Teko-Medium.ttf',
+      fontWeight: 500
+    },
+    {
+      src: './fonts/Teko/Teko-SemiBold.ttf',
+      fontWeight: 600
+    },
+    {
+      src: './fonts/Teko/Teko-Bold.ttf',
+      fontWeight: 'bold'
+    },
+  ]
+});
+
 // Create a logger to track activity
 const logger = winston.createLogger({
   level:'warning',
