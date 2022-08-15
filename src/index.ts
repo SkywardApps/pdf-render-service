@@ -10,20 +10,20 @@ Font.register({
   family: 'Roboto',
   fonts: [
     {
-      src: './fonts/Roboto-Regular.ttf',
+      src: './fonts/Roboto/Roboto-Regular.ttf',
       fontWeight: 'normal', // Default, does not have to be specified
       fontStyle: 'normal',  // Default, does not have to be specified
     },
     {
-      src: './fonts/Roboto-Bold.ttf',
+      src: './fonts/Roboto/Roboto-Bold.ttf',
       fontWeight: 'bold' // Also accepts numeric values, ex. 700
     },
     {
-      src: './fonts/Roboto-Italic.ttf',
+      src: './fonts/Roboto/Roboto-Italic.ttf',
       fontStyle: 'italic'
     },
     {
-      src: './fonts/Roboto-BoldItalic.ttf',
+      src: './fonts/Roboto/Roboto-BoldItalic.ttf',
       fontStyle: 'italic',
       fontWeight: 'bold',
     },
