@@ -1,4 +1,4 @@
-FROM alpine as bmz_base
+FROM alpine as pdf_base
 
 RUN apk update && apk add nodejs && apk upgrade busybox
 
@@ -8,13 +8,13 @@ WORKDIR /app
 EXPOSE 9000
 
 # Build another image that's just for debugging.
-FROM bmz_base as bmz_debug
+FROM pdf_base as pdf_debug
 # This is left empty because compose will mount
 # the main app directory and build at runtime.
 # So do nothing app related as the files won't 
 # be present yet. 
 
-FROM node:14 as bmz_build
+FROM node:14 as pdf_build
 
 WORKDIR /src
 COPY package.json .
@@ -33,7 +33,7 @@ RUN npm prune --production
 # run node prune
 RUN npx node-prune
 
-FROM bmz_base as bmz_release
+FROM pdf_base as pdf_release
 
 # create a new user and change directory ownership
 RUN adduser --disabled-password \
@@ -44,7 +44,7 @@ RUN adduser --disabled-password \
 USER nodeuser
 WORKDIR /app
 
-COPY --from=bmz_build /src/dist ./dist
-COPY --from=bmz_build /src/fonts ./fonts
-COPY --from=bmz_build /src/node_modules ./node_modules
+COPY --from=pdf_build /src/dist ./dist
+COPY --from=pdf_build /src/fonts ./fonts
+COPY --from=pdf_build /src/node_modules ./node_modules
 ENTRYPOINT ["node", "dist/index.js"]
