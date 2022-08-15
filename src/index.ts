@@ -57,6 +57,91 @@ Font.register({
   ]
 });
 
+Font.register({
+  family: 'Noto Sans',
+  fonts: [
+    {
+      src: './fonts/Noto Sans/NotoSans-Thin.ttf',
+      fontWeight: 100
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-ThinItalic.ttf',
+      fontStyle: 'italic',
+      fontWeight: 100
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-ExtraLight.ttf',
+      fontWeight: 200
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-ExtraLightItalic.ttf',
+      fontStyle: 'italic',
+      fontWeight: 200
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-Light.ttf',
+      fontWeight: 300
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-LightItalic.ttf',
+      fontStyle: 'italic',
+      fontWeight: 300
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-Regular.ttf'
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-Italic.ttf',
+      fontStyle: 'italic'
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-Medium.ttf',
+      fontWeight: 500
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-MediumItalic.ttf',
+      fontStyle: 'italic',
+      fontWeight: 500
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-SemiBold.ttf',
+      fontWeight: 600
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-SemiBoldItalic.ttf',
+      fontStyle: 'italic',
+      fontWeight: 600
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-Bold.ttf',
+      fontWeight: 700
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-BoldItalic.ttf',
+      fontStyle: 'italic',
+      fontWeight: 700
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-ExtraBold.ttf',
+      fontWeight: 800
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-ExtraBoldItalic.ttf',
+      fontStyle: 'italic',
+      fontWeight: 800
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-Black.ttf',
+      fontWeight: 900
+    },
+    {
+      src: './fonts/Noto Sans/NotoSans-BlackItalic.ttf',
+      fontStyle: 'italic',
+      fontWeight: 900
+    }
+  ]
+})
+
 // Create a logger to track activity
 const logger = winston.createLogger({
   level:'warning',
