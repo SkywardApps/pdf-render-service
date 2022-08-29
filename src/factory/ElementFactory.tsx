@@ -2,7 +2,7 @@ import React from 'react';
 import {  Document } from '@react-pdf/renderer';
 import ReactPDF from '@react-pdf/renderer';
 import { PdfRequest } from '../wire/PdfRequest';
-import { ElementDeclaration } from '../wire/ElementDeclaration';
+import { ElementDeclaration, ElementTypes } from '../wire/ElementDeclaration';
 import { staticElementRegistry } from './ElementRegistry';
 import { IElementContext } from './IElementContext';
 import { IElementFactory } from './IElementFactory';
@@ -97,14 +97,25 @@ export class ElementFactory implements IElementContext, IElementFactory
         return <></>;
       }
     }
-    if(!staticElementRegistry.typeRegistry[element.type])
+
+    let elementType = element.type;
+    if(!elementType)
     {
-      this.logger.error(`No factory found for element of type ${element.type}`);
+      // Add some shortcuts
+      elementType = this.inferElementType(element);
     }
-    const rendered = staticElementRegistry.typeRegistry[element.type](element, this, this, this.logger);
+    
+    if(!staticElementRegistry.typeRegistry[elementType])
+    {
+      this.logger.error(`No factory found for element of type ${elementType}`);
+      throw new Error(`No factory found for element of type ${elementType}`);
+    }
+
+    const rendered = staticElementRegistry.typeRegistry[elementType](element, this, this, this.logger);
     if(!rendered)
     {
-      this.logger.error(`Attempted to render ${element.type} but got ${rendered}`, element);
+      this.logger.error(`Attempted to render ${elementType} but got ${rendered}`, element);
+      throw new Error(`Attempted to render ${elementType} but got ${rendered}`);
     }
     return rendered;
   };
@@ -203,6 +214,58 @@ export class ElementFactory implements IElementContext, IElementFactory
     });
     return vm.run(name);
   };
+
+  /**
+   * Attempt to infer what element type a node is by the presence of certain properties.
+   * @param element The element to infer the type for.
+   * @returns A strictly determined element type, or a thrown exception.
+   */
+  private inferElementType(element: ElementDeclaration) : ElementTypes {
+    let elementType: ElementTypes | undefined = undefined;
+
+    if ((element as any).text) {
+      elementType = 'text';
+    }
+
+    if ((element as any).src) {
+      if (!!elementType) {
+        this.logger.error(`Inferred a node type of ${elementType} but also found a 'src' attribute`);
+        throw new Error(`Inferred a node type of ${elementType} but also found a 'src' attribute`);
+      }
+      elementType = 'image';
+    }
+
+    if ((element as any).children) {
+      if (!!elementType) {
+        this.logger.error(`Inferred a node type of ${elementType} but also found a 'children' attribute`);
+        throw new Error(`Inferred a node type of ${elementType} but also found a 'children' attribute`);
+      }
+      elementType = 'view';
+    }
+
+    if ((element as any).basis && (element as any).loop) {
+      if (!!elementType) {
+        this.logger.error(`Inferred a node type of ${elementType} but also found a 'basis' attribute`);
+        throw new Error(`Inferred a node type of ${elementType} but also found a 'basis' attribute`);
+      }
+      elementType = 'list';
+    }
+
+    if ((element as any).basis && (element as any).loop) {
+      if (!!elementType) {
+        this.logger.error(`Inferred a node type of ${elementType} but also found a 'basis' attribute`);
+        throw new Error(`Inferred a node type of ${elementType} but also found a 'basis' attribute`);
+      }
+      elementType = 'list';
+    }
+
+    if (!elementType) {
+      this.logger.error(`No node type could be inferred`);
+      throw new Error(`No node type could be inferred`);
+    }
+    
+    return elementType;
+  }
 }
 
 

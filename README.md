@@ -247,7 +247,8 @@ Render some basic text on the screen via the `text` property.
 
 Accepts full styling. 
 
-Cannot contain children.
+~~Cannot contain children.~~
+Can contain children, but they can _only_ be other Text elements.  This allows for inline spans with changing formatting; Ie a parent text element with one regular text part, one **bolded** text part, and a final regular text part, that all flows and is laid out as one text line.
 
 ### Images
 
@@ -275,4 +276,55 @@ or _after_ the list , respectively, _on each page in which the list was rendered
 
 Cannot contain children, other than the individual items in `loop` `header` or `footer`.
 
+## Type inference
+
+In simple cases you can elide the `type` property by providing one of the discriminator properties.  That is, one of:
+
+* `text`: Infer a text type.
+* `src`: Infer an image type.
+* `children`: infer a view type.
+* `basis` and `loop`: infer a list type.
+
+In more complex cases (a text with children, for example) you will need to explicitly provide the `type`.
+
 ## Examples
+
+```json
+{
+    "text": "Hello World!",
+    "comment": "You can add a comment for readability.  This element will be auto-detected as text due to the text property"
+}
+```
+
+```json
+{
+    "src": "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v9/static/geojson({{$item.FieldGeometry}})/auto/345x287?access_token={{data.MapBoxAccessToken}}",
+    "comment": "This is an image.  You can see we reference the data payload here to make the image dynamic. Basically any single-statement javascript can be embedded here so long as it resolves to something that can be inserted as text".
+}
+```
+
+```json
+{
+    "style": {
+        "display": "flex",
+        "flexDirection": "column",
+        "padding": 16,
+        "paddingTop": 4
+    },
+    "children": [
+        { 
+            "type":"text",
+            "comment": "text elements can have child text elements so that layout flows together",
+            "children": [
+                { "text": "Hello "},
+                { "text": "World", "style": {"fontWeight":"bold", "color": "blue" } },
+                { "text": "!" }
+            ]
+        },
+        {
+            "comment": "You can provide base 64 data uris for inlining images too", 
+            "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII"
+        }
+    ]
+}
+```
