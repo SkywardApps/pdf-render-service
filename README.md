@@ -247,7 +247,8 @@ Render some basic text on the screen via the `text` property.
 
 Accepts full styling. 
 
-Cannot contain children.
+~~Cannot contain children.~~
+Can contain children, but they can _only_ be other Text elements.  This allows for inline spans with changing formatting; Ie a parent text element with one regular text part, one **bolded** text part, and a final regular text part, that all flows and is laid out as one text line.
 
 ### Images
 

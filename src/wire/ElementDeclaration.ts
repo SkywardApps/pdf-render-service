@@ -1,4 +1,4 @@
-export type ElementTypes = 'view'|'image'|'text';
+export type ElementTypes = 'view'|'image'|'text'|'list'|'shadow'|'page';
 
 export interface ElementDeclaration {
   type: ElementTypes;
