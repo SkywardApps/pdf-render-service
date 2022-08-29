@@ -24,6 +24,11 @@ export interface StylableElementDeclaration extends ElementDeclaration {
 
 export interface PageElementDeclaration extends StylableElementDeclaration
 {
+  // The paper size to use
+  size: string | undefined;
+  // Determines page orientation. Valid values are "portrait" or "landscape".
+  orientation: 'portrait' | 'landscape' | undefined;
+  // Child elements to lay out on the page
   children: ElementDeclaration[];
 }
 
