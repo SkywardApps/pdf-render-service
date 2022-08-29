@@ -215,6 +215,11 @@ export class ElementFactory implements IElementContext, IElementFactory
     return vm.run(name);
   };
 
+  /**
+   * Attempt to infer what element type a node is by the presence of certain properties.
+   * @param element The element to infer the type for.
+   * @returns A strictly determined element type, or a thrown exception.
+   */
   private inferElementType(element: ElementDeclaration) : ElementTypes {
     let elementType: ElementTypes | undefined = undefined;
 
@@ -258,6 +263,7 @@ export class ElementFactory implements IElementContext, IElementFactory
       this.logger.error(`No node type could be inferred`);
       throw new Error(`No node type could be inferred`);
     }
+    
     return elementType;
   }
 }
