@@ -13,7 +13,13 @@ export const createPageElement = (element: PageElementDeclaration, factory:IElem
     const finalStyle = context.buildFinalStyle(classes, style);
     logger.debug('<Page> Creating new page.')
     return (
-        <Page key={v4()} style={finalStyle} size={context.config.size} debug={context.config.debug} ruler={context.config.debug} >
+        <Page 
+            key={v4()} 
+            style={finalStyle} 
+            size={element.size ?? context.config.size ?? 'Letter'} 
+            orientation={element.orientation ?? context.config.orientation ?? 'portrait'} 
+            debug={context.config.debug} 
+            ruler={context.config.debug} >
         {
             children.map(child => factory.createElement(child))
         }

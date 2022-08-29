@@ -6,7 +6,9 @@ export interface PdfRequest {
   // The title is used both for the title meta-property in the pdf, and the returned file name
   title: string;
   // The paper size to use
-  size: string;
+  size: string | undefined;
+  // Determines page orientation. Valid values are "portrait" or "landscape".
+  orientation: 'portrait' | 'landscape' | undefined;
   // Whether to draw debugging rects around all items
   debug: boolean;
   // A collection of named styles that can be referenced
