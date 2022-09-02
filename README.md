@@ -268,7 +268,7 @@ property.
 
 You must specify a `basis` property and provide the reference to an array of items in your data payload,
 although technically you can insert javascript here that simply _results_ in an array.  You must then
-provide a `loop` property which defines a single child element that will be rendered for each item in the
+provide a `loop` property which defines a single child element (as an object) or an array of child elements that will be rendered for each item in the
 basis array.
 
 Optionally, you can provide `header` and `footer`, each of which is a simple element that is placed _before_
