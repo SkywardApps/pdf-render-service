@@ -1,6 +1,6 @@
 import {
   Style,
-  PageSize,
+  StandardPageSize,
   Orientation,
 } from '@react-pdf/types';
 import { ElementDeclaration } from './ElementDeclaration';
@@ -10,7 +10,7 @@ export interface PdfRequest {
   // The title is used both for the title meta-property in the pdf, and the returned file name
   title: string;
   // The paper size to use
-  size: PageSize | undefined;
+  size: StandardPageSize | undefined;
   // Determines page orientation. Valid values are "portrait" or "landscape".
   orientation: Orientation | undefined;
   // Whether to draw debugging rects around all items
