@@ -1,6 +1,5 @@
 import React from 'react';
 import {  Document } from '@react-pdf/renderer';
-import ReactPDF from '@react-pdf/renderer';
 import { PdfRequest } from '../wire/PdfRequest';
 import { ElementDeclaration, ElementTypes } from '../wire/ElementDeclaration';
 import { staticElementRegistry } from './ElementRegistry';
@@ -8,6 +7,7 @@ import { IElementContext } from './IElementContext';
 import { IElementFactory } from './IElementFactory';
 import { VM } from 'vm2';
 import { ILogger } from '../ILogger';
+import { Style } from '@react-pdf/types';
 
 // The factory is responsible for processing json and generating React elements to represent it.
 export class ElementFactory implements IElementContext, IElementFactory
@@ -121,7 +121,7 @@ export class ElementFactory implements IElementContext, IElementFactory
   };
 
   // Given a list of class names to apply and an element-level style declaration, derive the final style
-  public buildFinalStyle = (classes: string[], style: ReactPDF.Style ) :  ReactPDF.Style => {
+  public buildFinalStyle = (classes: string[], style: Style ) :  Style => {
     const finalStyle = {};
     (classes || []).forEach(cls => Object.assign(finalStyle, this.config.styles[cls]));
     const convertedStyle = this.objectMap(style || {},
@@ -241,14 +241,6 @@ export class ElementFactory implements IElementContext, IElementFactory
         throw new Error(`Inferred a node type of ${elementType} but also found a 'children' attribute`);
       }
       elementType = 'view';
-    }
-
-    if ((element as any).basis && (element as any).loop) {
-      if (!!elementType) {
-        this.logger.error(`Inferred a node type of ${elementType} but also found a 'basis' attribute`);
-        throw new Error(`Inferred a node type of ${elementType} but also found a 'basis' attribute`);
-      }
-      elementType = 'list';
     }
 
     if ((element as any).basis && (element as any).loop) {

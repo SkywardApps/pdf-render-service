@@ -1,13 +1,14 @@
 import { TextElementDeclaration } from '../../wire/ElementDeclaration';
 import { IElementFactory } from '../IElementFactory';
 import { IElementContext } from '../IElementContext';
-import ReactPDF, { View, Text } from '@react-pdf/renderer';
+import { View, Text } from '@react-pdf/renderer';
+import { Style } from '@react-pdf/types';
 import React from 'react';
 import { ILogger } from '../../ILogger';
 import { v4 } from 'uuid';
 import { finalizeBoolean } from '../../helpers/FinalizeHelpers';
 
-type StyleWithShadow = ReactPDF.Style & {
+type StyleWithShadow = Style & {
     shadowColor?:string,
     shadowOpacity?:number,
     shadowTranslateX?:number,
@@ -57,7 +58,7 @@ export const createShadowElement = (element: TextElementDeclaration, factory:IEl
                     top:0,
                     left:0,
                     transform:`translateX(${finalStyle?.shadowTranslateX || finalStyle?.shadowTranslate || defaultShadowTranslate})`
-                                +` translateY(${style?.shadowTranslateY || style?.shadowTranslate || defaultShadowTranslate})`
+                                +` translateY(${finalStyle?.shadowTranslateY || finalStyle?.shadowTranslate || defaultShadowTranslate})`
                 }}
                 render={({pageNumber, totalPages}) => {
                     return renderFunction({pageNumber, totalPages});
