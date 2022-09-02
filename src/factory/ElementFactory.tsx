@@ -7,9 +7,7 @@ import { IElementContext } from './IElementContext';
 import { IElementFactory } from './IElementFactory';
 import { VM } from 'vm2';
 import { ILogger } from '../ILogger';
-import {
-  Style,
-} from '@react-pdf/types';
+import { Style } from '@react-pdf/types';
 
 // The factory is responsible for processing json and generating React elements to represent it.
 export class ElementFactory implements IElementContext, IElementFactory

@@ -1,9 +1,8 @@
 import { TextElementDeclaration } from '../../wire/ElementDeclaration';
 import { IElementFactory } from '../IElementFactory';
 import { IElementContext } from '../IElementContext';
-import { View, Text } from '@react-pdf/renderer';import {
-    Style,
-  } from '@react-pdf/types';
+import { View, Text } from '@react-pdf/renderer';
+import { Style } from '@react-pdf/types';
 import React from 'react';
 import { ILogger } from '../../ILogger';
 import { v4 } from 'uuid';

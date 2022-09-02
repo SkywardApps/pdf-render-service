@@ -1,6 +1,5 @@
-import { PdfRequest } from '../wire/PdfRequest';import {
-  Style
-} from '@react-pdf/types';
+import { PdfRequest } from '../wire/PdfRequest';
+import { Style } from '@react-pdf/types';
 
 export interface IElementContext
 {
