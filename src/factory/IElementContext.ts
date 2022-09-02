@@ -1,7 +1,6 @@
-import React from 'react';
-import ReactPDF from '@react-pdf/renderer';
-import { PdfRequest } from '../wire/PdfRequest';
-import { ElementDeclaration } from '../wire/ElementDeclaration';
+import { PdfRequest } from '../wire/PdfRequest';import {
+  Style
+} from '@react-pdf/types';
 
 export interface IElementContext
 {
@@ -15,7 +14,7 @@ export interface IElementContext
   popData():void;
 
   // Given a list of class names to apply and an element-level style declaration, derive the final style
-  buildFinalStyle(classes: string[], style: ReactPDF.Style): ReactPDF.Style;
+  buildFinalStyle(classes: string[], style: Style): Style;
 
   // Given a string that may have interpolation templates embedded, and any extra local variables to give access to,
   // substitute any templates and return the result

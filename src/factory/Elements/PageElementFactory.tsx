@@ -16,10 +16,9 @@ export const createPageElement = (element: PageElementDeclaration, factory:IElem
         <Page 
             key={v4()} 
             style={finalStyle} 
-            size={element.size ?? context.config.size ?? 'Letter'} 
+            size={element.size ?? context.config.size ?? 'LETTER'} 
             orientation={element.orientation ?? context.config.orientation ?? 'portrait'} 
-            debug={context.config.debug} 
-            ruler={context.config.debug} >
+            debug={context.config.debug} >
         {
             children.map(child => factory.createElement(child))
         }

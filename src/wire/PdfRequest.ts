@@ -1,4 +1,8 @@
-import ReactPDF from '@react-pdf/renderer';
+import {
+  Style,
+  PageSize,
+  Orientation,
+} from '@react-pdf/types';
 import { ElementDeclaration } from './ElementDeclaration';
 
 // This defines the expected incoming request format
@@ -6,14 +10,14 @@ export interface PdfRequest {
   // The title is used both for the title meta-property in the pdf, and the returned file name
   title: string;
   // The paper size to use
-  size: string | undefined;
+  size: PageSize | undefined;
   // Determines page orientation. Valid values are "portrait" or "landscape".
-  orientation: 'portrait' | 'landscape' | undefined;
+  orientation: Orientation | undefined;
   // Whether to draw debugging rects around all items
   debug: boolean;
   // A collection of named styles that can be referenced
   styles: {
-    [key: string]: ReactPDF.Style;
+    [key: string]: Style;
   };
   // Any data model to bind to templates
   data: any;

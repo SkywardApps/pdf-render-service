@@ -1,3 +1,9 @@
+import {
+  Style,
+  PageSize,
+  Orientation,
+} from '@react-pdf/types';
+
 export type ElementTypes = 'view'|'image'|'text'|'list'|'shadow'|'page';
 
 export interface ElementDeclaration {
@@ -17,7 +23,7 @@ export interface ListElementDeclaration extends ElementDeclaration
 }
 
 export interface StylableElementDeclaration extends ElementDeclaration {
-  style: any;
+  style: Style;
   classes: string[];
   debug:boolean;
 }
@@ -25,9 +31,9 @@ export interface StylableElementDeclaration extends ElementDeclaration {
 export interface PageElementDeclaration extends StylableElementDeclaration
 {
   // The paper size to use
-  size: string | undefined;
+  size: PageSize | undefined;
   // Determines page orientation. Valid values are "portrait" or "landscape".
-  orientation: 'portrait' | 'landscape' | undefined;
+  orientation: Orientation | undefined;
   // Child elements to lay out on the page
   children: ElementDeclaration[];
 }
