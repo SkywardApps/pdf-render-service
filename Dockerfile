@@ -1,16 +1,3 @@
-FROM alpine as pdf_base
-
-RUN apk update && apk add nodejs && apk upgrade busybox
-# These selections will cover most languages and are a good fit for most setups: 
-RUN apk add font-misc-misc
-RUN fc-cache -fv
-
-
-# Run everything after as non-privileged user.
-RUN install -m 775 -d /usr/src/app
-WORKDIR /app
-EXPOSE 9000
-
 # Build another image that's just for debugging.
 FROM pdf_base as pdf_debug
 # This is left empty because compose will mount
@@ -37,7 +24,12 @@ RUN npm prune --production
 # run node prune
 RUN npx node-prune
 
-FROM pdf_base as pdf_release
+FROM node:14 as pdf_release
+
+# Run everything after as non-privileged user.
+RUN install -m 775 -d /usr/src/app
+WORKDIR /app
+EXPOSE 9000
 
 # create a new user and change directory ownership
 RUN adduser --disabled-password \
