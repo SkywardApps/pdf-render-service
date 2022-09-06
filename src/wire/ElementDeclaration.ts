@@ -19,7 +19,7 @@ export interface ListElementDeclaration extends ElementDeclaration
   header:ElementDeclaration;
   footer:ElementDeclaration;
   basis:string;
-  loop:ElementDeclaration;
+  loop: ElementDeclaration | ElementDeclaration[];
 }
 
 export interface StylableElementDeclaration extends ElementDeclaration {

@@ -21,15 +21,25 @@ export const createListElement = (element: ListElementDeclaration, factory:IElem
     logger.debug(`<List> dataBasis=${basis}`);
 
     // Map our dataBasis to all elements
-    const innerElements = dataBasis.map((elementData, index) => {
+    const innerElements2D = dataBasis.map((elementData, index) => {
         // push a new scope with the iterated item as part of it, plus some supporting values
         context.pushData({[iteratedIndexName]:index, [iteratedItemName]:elementData, [iteratedParentName]:context.scope[iteratedItemName]});
         // Create the inner item for this element, using the above scope
-        const item = factory.createElement(loop);
+        let items = [];
+        if (Array.isArray(loop)) {
+            items = loop.map((loopChild) => factory.createElement(loopChild))
+        } else {
+            const item = factory.createElement(loop);
+            items.push(item);
+        }
         // Remove the scope
         context.popData();
-        return item;
-    }) as React.ReactElement[];
+        return items;
+    }) as React.ReactElement[][];
+    const innerElements = innerElements2D.reduce((total, cur) => {
+        total.push(...cur);
+        return total;
+    }, [] as React.ReactElement[])
     return (
         <>
             {headerElement}
