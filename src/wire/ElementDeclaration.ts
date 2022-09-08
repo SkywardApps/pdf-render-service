@@ -6,53 +6,82 @@ import {
 
 export type ElementTypes = 'view'|'image'|'text'|'list'|'shadow'|'page';
 
+export type StyleWithShadow = Style & {
+  shadowColor?:string,
+  shadowOpacity?:number,
+  shadowTranslateX?:number,
+  shadowTranslateY?:number,
+  shadowTranslate?:number,
+};
+
+export type StyleWithEvaluation = {
+  [Property in keyof Style]: Style[Property] | string;
+};
+
 export interface ElementDeclaration {
-  type: ElementTypes;
-  fixed: boolean;
-  break:boolean;
+  type?: ElementTypes;
+  fixed?: boolean;
+  break?:boolean;
   condition?:string | undefined;
+  key?:string;
+  comment?:string;
 }
 
 
 export interface ListElementDeclaration extends ElementDeclaration
 {
-  header:ElementDeclaration;
-  footer:ElementDeclaration;
+  type?: 'list';
+  header?:AnyElementDeclaration;
+  footer?:AnyElementDeclaration;
   basis:string;
-  loop: ElementDeclaration | ElementDeclaration[];
+  loop: AnyElementDeclaration | AnyElementDeclaration[];
 }
 
 export interface StylableElementDeclaration extends ElementDeclaration {
-  style: Style;
-  classes: string[];
-  debug:boolean;
+  style?: StyleWithEvaluation;
+  classes?: string[];
+  debug?:boolean;
 }
 
 export interface PageElementDeclaration extends StylableElementDeclaration
 {
+  type?: 'page';
   // The paper size to use
-  size: StandardPageSize | undefined;
+  size?: StandardPageSize | undefined;
   // Determines page orientation. Valid values are "portrait" or "landscape".
-  orientation: Orientation | undefined;
+  orientation?: Orientation | undefined;
   // Child elements to lay out on the page
-  children: ElementDeclaration[];
+  children: AnyElementDeclaration[];
 }
 
 export interface ViewElementDeclaration extends StylableElementDeclaration
 {
-  wrap:boolean;
-  children: ElementDeclaration[];
+  type?: 'view';
+  wrap?:boolean;
+  children: AnyElementDeclaration[];
+}
+
+export interface ShadowElementDeclaration extends StylableElementDeclaration
+{
+  type?: 'shadow';
+  wrap?:boolean;
+  text?:string;
+  style?:StyleWithShadow;
 }
 
 export interface TextElementDeclaration extends StylableElementDeclaration
 {
-  wrap:boolean;
-  text:string;
-  children: TextElementDeclaration[] | undefined;
+  type?: 'text';
+  wrap?:boolean;
+  text?:string;
+  children?: TextElementDeclaration[] | undefined;
 }
 
 export interface ImageElementDeclaration extends StylableElementDeclaration
 {
+  type?: 'image';
   src:string;
-  cache:boolean;
+  cache?:boolean;
 }
+
+export type AnyElementDeclaration = ImageElementDeclaration | TextElementDeclaration | ShadowElementDeclaration | ViewElementDeclaration | ListElementDeclaration;

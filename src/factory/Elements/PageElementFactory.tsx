@@ -9,15 +9,30 @@ import {
   PageSize,
   Orientation
 } from '@react-pdf/types';
+import { createElementKey } from "../createElementKey";
 
 // Create a new page.  This must be at the top level, and are the only items allowed at the top level.
-export const createPageElement = (element: PageElementDeclaration, factory:IElementFactory, context:IElementContext, logger:ILogger): React.ReactElement => {
+export const createPageElement = async (element: PageElementDeclaration, factory:IElementFactory, context:IElementContext, stack: string[], logger:ILogger): Promise<React.ReactElement> => {
     const { style, children, classes } = element;
+    const key = createElementKey('page', element);
+
     // Build the style to apply to the page.  Not all attributes make sense here (mainly, eg, margin)
-    const finalStyle = context.buildFinalStyle(classes, style);
+    const finalStyle = context.buildFinalStyle(classes ?? [], style ?? {});
+
+    if(finalStyle.fontFamily && !context.fontIsRegistered(finalStyle.fontFamily))
+    {
+      await context.loadReferencedFonts(finalStyle.fontFamily)
+    }
 
     const size = context.finalizeString(element.size ?? context.config.size ?? 'LETTER') as PageSize;
     const orientation = context.finalizeString(element.orientation ?? context.config.orientation ?? 'portrait') as Orientation;
+
+    const renderedChildren = [];
+    for(let idx = 0; idx < children.length; ++ idx)
+    {
+        const child = children[idx];
+        renderedChildren.push(await factory.createElement(child, [...stack, key+`.child[${idx}]`]));
+    }
 
     logger.debug('<Page> Creating new page.')
     return (
@@ -27,9 +42,7 @@ export const createPageElement = (element: PageElementDeclaration, factory:IElem
             size={size} 
             orientation={orientation} 
             debug={context.config.debug} >
-        {
-            children.map(child => factory.createElement(child))
-        }
+        {renderedChildren}
         </Page>
     );
 };

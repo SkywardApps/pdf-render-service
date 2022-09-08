@@ -9,10 +9,10 @@ import { createShadowElement } from './Elements/ShadowElementFactory';
 import { ILogger } from '../ILogger';
 
 // Define the function signature that we use to create elements
-export type ElementFactoryFunction = (e: any, factory:IElementFactory, context:IElementContext, logger:ILogger) => React.ReactElement | React.ReactElement[];
+export type ElementFactoryFunction = (e: any, factory:IElementFactory, context:IElementContext, stack: string[], logger:ILogger) => Promise<React.ReactElement | React.ReactElement[]>;
 type ElementTypeRegistry = {
     [key:string]: ElementFactoryFunction;
-  };
+};
 
 // One static registry to rule them all.
 // Future development may result in some kind of scoping for this registry, but for now we just have the singleton
@@ -25,8 +25,8 @@ class ElementRegistry
     }
 
     // Instantiate a specific element
-    public create(typename:string, e:any, factory:IElementFactory, context:IElementContext, logger:ILogger) {
-        this.typeRegistry[typename](e, factory, context, logger);
+    public create(typename:string, e:any, factory:IElementFactory, context:IElementContext, stack: string[], logger:ILogger) {
+        this.typeRegistry[typename](e, factory, context, stack, logger);
     }
 
     public readonly typeRegistry: ElementTypeRegistry = {};

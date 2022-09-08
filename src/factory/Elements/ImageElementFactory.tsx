@@ -8,10 +8,10 @@ import { v4 } from 'uuid';
 import { finalizeBoolean } from '../../helpers/FinalizeHelpers';
 
 /// Create a brand new image element from the declaration passed in.
-export const createImageElement = (element: ImageElementDeclaration, factory:IElementFactory, context:IElementContext, logger:ILogger): React.ReactElement => {
+export const createImageElement = async (element: ImageElementDeclaration, factory:IElementFactory, context:IElementContext, stack: string[], logger:ILogger): Promise<React.ReactElement> => {
     const { style, src, classes, debug } = element;
     // Construct the style to apply
-    const finalStyle = context.buildFinalStyle(classes, style);
+    const finalStyle = context.buildFinalStyle(classes ?? [], style ?? {});
     // Interpret what the src is
     const finalSrc = context.finalizeString(src);
     

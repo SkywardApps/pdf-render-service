@@ -1,8 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { PdfController } from './PdfController';
 import { ILogger } from './ILogger';
-
-
+import { listFonts } from './fontManagement';
 
 // This method handles the incoming request and routing -- there's really only one endpoint,
 // so we haven't set up anything complex.
@@ -26,14 +25,25 @@ export const server = (request: IncomingMessage, res: ServerResponse, logger:ILo
 
     // We treat a GET as a basic health check; we may want to flesh this out with more 
     // data like a real status request
-    if (request.method === 'GET') {
+    if (request.method === 'GET' && request.url == '/') {
         res.writeHead(200, headers);
         res.end("SUCCESS");
         return;
     }
 
+    if(request.method === 'GET' && request.url == '/fonts') {
+        const fonts = listFonts();
+        res.setHeader('Content-type', 'application/json');
+        res.writeHead(200, headers);
+        res.end(JSON.stringify(fonts));
+        return;
+    }
+
     // Create the controller that'll actually process the request.
-    const server = new PdfController(request, res, logger);
+    const server = new PdfController(request, res, logger, {
+        GoogleApiKey: process.env.GOOGLEAPIKEY ?? 'UNKNOWN'
+    });
+
     // In theory there could be a PUT or DELETE so verify 
     if (request.method == 'POST') {
         logger.info(`Incoming request POST ${request.url}` );

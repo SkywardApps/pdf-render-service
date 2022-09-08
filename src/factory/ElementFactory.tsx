@@ -1,20 +1,22 @@
 import React from 'react';
 import {  Document } from '@react-pdf/renderer';
 import { PdfRequest } from '../wire/PdfRequest';
-import { ElementDeclaration, ElementTypes } from '../wire/ElementDeclaration';
+import { ElementDeclaration, ElementTypes, StyleWithEvaluation } from '../wire/ElementDeclaration';
 import { staticElementRegistry } from './ElementRegistry';
 import { IElementContext } from './IElementContext';
 import { IElementFactory } from './IElementFactory';
 import { VM } from 'vm2';
 import { ILogger } from '../ILogger';
 import { Style } from '@react-pdf/types';
+import { fontIsRegistered, loadReferencedFonts } from '../fontManagement';
+import { createElementKey } from './createElementKey';
 
 // The factory is responsible for processing json and generating React elements to represent it.
 export class ElementFactory implements IElementContext, IElementFactory
 {
   public readonly config:PdfRequest;
 
-  public constructor(config: PdfRequest, private logger: ILogger)
+  public constructor(config: PdfRequest, private logger: ILogger, private googleApiKey: string)
   {
     // apply defaults
     this.config = Object.assign({
@@ -25,6 +27,16 @@ export class ElementFactory implements IElementContext, IElementFactory
       styles : {},
       title : 'PDF Document'
     }, config);
+  }
+
+  async loadReferencedFonts(fontFamily: string): Promise<void> 
+  {
+    await loadReferencedFonts([fontFamily], this.googleApiKey, this.logger);
+  }
+  
+  fontIsRegistered(fontFamily: string): boolean 
+  {
+    return fontIsRegistered(fontFamily);
   }
 
   // Because we have some basic logic constructs, we push extra local variables onto
@@ -54,20 +66,21 @@ export class ElementFactory implements IElementContext, IElementFactory
     return {...this.localDataStacks[this.localDataStacks.length-1], ...this.config};
   }
 
-
   // Convert the data provided into React Elements
-  public generate = (): React.ReactElement => {
+  public generate = async (): Promise<React.ReactElement> => {
     this.logger.debug('Rendering document');
-    const title = this.finalizeString(this.config.title);
+    const title = this.finalizeString(this.config.title ?? 'document');
     // The top level is always a document, and children should always be pages
+    const pages: (React.ReactElement | React.ReactElement[])[] = [];
+    for(let pageIndex = 0; pageIndex < this.config.pages.length; pageIndex++)
+    {
+      const pageConfig = this.config.pages[pageIndex];
+      pages.push(await this.createElement(pageConfig, [`document[${pageIndex}]`]));
+    }
+
     try{
       return (
-        <Document title={title}>{
-            this.config.pages.map(pageConfig =>
-              this.createElement(pageConfig)
-              )
-            }
-        </Document>
+        <Document title={title}>{pages}</Document>
       );
     }
     catch(err)
@@ -83,7 +96,7 @@ export class ElementFactory implements IElementContext, IElementFactory
 
 
   // Given a declaration of an element, determine its real type and generate a React equivalent
-  public createElement = (element: ElementDeclaration): React.ReactElement | React.ReactElement[] => {
+  public createElement = async (element: ElementDeclaration, stack: string[]): Promise<React.ReactElement | React.ReactElement[]> => {
     this.logger.debug(`Creating ${element.type}`)
 
     // If this has a condition, validate it
@@ -102,28 +115,50 @@ export class ElementFactory implements IElementContext, IElementFactory
     if(!elementType)
     {
       // Add some shortcuts
-      elementType = this.inferElementType(element);
+      if(stack.length === 1)
+      {
+        elementType = 'page';
+      }
+      else
+      {
+        elementType = this.inferElementType(element);
+      }
     }
     
-    if(!staticElementRegistry.typeRegistry[elementType])
+    try
     {
-      this.logger.error(`No factory found for element of type ${elementType}`);
-      throw new Error(`No factory found for element of type ${elementType}`);
-    }
+      if(!staticElementRegistry.typeRegistry[elementType])
+      {
+        this.logger.error(`No factory found for element of type ${elementType}`);
+        throw new Error(`No factory found for element of type ${elementType}`);
+      }
 
-    const rendered = staticElementRegistry.typeRegistry[elementType](element, this, this, this.logger);
-    if(!rendered)
-    {
-      this.logger.error(`Attempted to render ${elementType} but got ${rendered}`, element);
-      throw new Error(`Attempted to render ${elementType} but got ${rendered}`);
+      const rendered = await staticElementRegistry.typeRegistry[elementType](element, this, this, stack, this.logger);
+      if(!rendered)
+      {
+        this.logger.error(`Attempted to render ${elementType} but got ${rendered}`, element);
+        throw new Error(`Attempted to render ${elementType} but got ${rendered}`);
+      }
+      return rendered;
     }
-    return rendered;
+    catch(err)
+    {
+      console.error('Recaught an error in createElement');
+      // IF there isn't already a render stack attached, attach it.
+      const anyError = err as any;
+      if(!anyError.renderStack)
+      {
+        let currentItemKey = createElementKey(elementType, element);
+        anyError.renderStack = [...stack, currentItemKey];
+      }
+      throw err;
+    }
   };
 
   // Given a list of class names to apply and an element-level style declaration, derive the final style
-  public buildFinalStyle = (classes: string[], style: Style ) :  Style => {
+  public buildFinalStyle = (classes: string[], style: StyleWithEvaluation ) :  Style => {
     const finalStyle = {};
-    (classes || []).forEach(cls => Object.assign(finalStyle, this.config.styles[cls]));
+    (classes || []).forEach(cls => Object.assign(finalStyle, this.config.styles?.[cls]));
     const convertedStyle = this.objectMap(style || {},
        (key, value) => typeof value === 'string' ? this.finalizeString(value, {appliedStyle:finalStyle, style}) : value);
     Object.assign(finalStyle, convertedStyle);
@@ -259,7 +294,5 @@ export class ElementFactory implements IElementContext, IElementFactory
     return elementType;
   }
 }
-
-
 
 

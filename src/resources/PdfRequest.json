@@ -1,0 +1,1516 @@
+{
+  "$id": "PdfRequest",
+  "$ref": "#/definitions/PdfRequest",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "AnyElementDeclaration": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/ImageElementDeclaration"
+        },
+        {
+          "$ref": "#/definitions/TextElementDeclaration"
+        },
+        {
+          "$ref": "#/definitions/ShadowElementDeclaration"
+        },
+        {
+          "$ref": "#/definitions/ViewElementDeclaration"
+        },
+        {
+          "$ref": "#/definitions/ListElementDeclaration"
+        }
+      ]
+    },
+    "ImageElementDeclaration": {
+      "additionalProperties": false,
+      "properties": {
+        "break": {
+          "type": "boolean"
+        },
+        "cache": {
+          "type": "boolean"
+        },
+        "classes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "comment": {
+          "type": "string"
+        },
+        "condition": {
+          "type": "string"
+        },
+        "debug": {
+          "type": "boolean"
+        },
+        "fixed": {
+          "type": "boolean"
+        },
+        "key": {
+          "type": "string"
+        },
+        "src": {
+          "type": "string"
+        },
+        "style": {
+          "$ref": "#/definitions/StyleWithEvaluation"
+        },
+        "type": {
+          "const": "image",
+          "type": "string"
+        }
+      },
+      "required": [
+        "src"
+      ],
+      "type": "object"
+    },
+    "ListElementDeclaration": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "type": "string"
+        },
+        "break": {
+          "type": "boolean"
+        },
+        "comment": {
+          "type": "string"
+        },
+        "condition": {
+          "type": "string"
+        },
+        "fixed": {
+          "type": "boolean"
+        },
+        "footer": {
+          "$ref": "#/definitions/AnyElementDeclaration"
+        },
+        "header": {
+          "$ref": "#/definitions/AnyElementDeclaration"
+        },
+        "key": {
+          "type": "string"
+        },
+        "loop": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AnyElementDeclaration"
+            },
+            {
+              "items": {
+                "$ref": "#/definitions/AnyElementDeclaration"
+              },
+              "type": "array"
+            }
+          ]
+        },
+        "type": {
+          "const": "list",
+          "type": "string"
+        }
+      },
+      "required": [
+        "basis",
+        "loop"
+      ],
+      "type": "object"
+    },
+    "Orientation": {
+      "enum": [
+        "portrait",
+        "landscape"
+      ],
+      "type": "string"
+    },
+    "PageElementDeclaration": {
+      "additionalProperties": false,
+      "properties": {
+        "break": {
+          "type": "boolean"
+        },
+        "children": {
+          "items": {
+            "$ref": "#/definitions/AnyElementDeclaration"
+          },
+          "type": "array"
+        },
+        "classes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "comment": {
+          "type": "string"
+        },
+        "condition": {
+          "type": "string"
+        },
+        "debug": {
+          "type": "boolean"
+        },
+        "fixed": {
+          "type": "boolean"
+        },
+        "key": {
+          "type": "string"
+        },
+        "orientation": {
+          "$ref": "#/definitions/Orientation"
+        },
+        "size": {
+          "$ref": "#/definitions/StandardPageSize"
+        },
+        "style": {
+          "$ref": "#/definitions/StyleWithEvaluation"
+        },
+        "type": {
+          "const": "page",
+          "type": "string"
+        }
+      },
+      "required": [
+        "children"
+      ],
+      "type": "object"
+    },
+    "PdfRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "data": {},
+        "debug": {
+          "type": "boolean"
+        },
+        "orientation": {
+          "$ref": "#/definitions/Orientation"
+        },
+        "pages": {
+          "items": {
+            "$ref": "#/definitions/PageElementDeclaration"
+          },
+          "type": "array"
+        },
+        "size": {
+          "$ref": "#/definitions/StandardPageSize"
+        },
+        "styles": {
+          "additionalProperties": {
+            "$ref": "#/definitions/StyleWithEvaluation"
+          },
+          "type": "object"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "pages"
+      ],
+      "type": "object"
+    },
+    "ShadowElementDeclaration": {
+      "additionalProperties": false,
+      "properties": {
+        "break": {
+          "type": "boolean"
+        },
+        "classes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "comment": {
+          "type": "string"
+        },
+        "condition": {
+          "type": "string"
+        },
+        "debug": {
+          "type": "boolean"
+        },
+        "fixed": {
+          "type": "boolean"
+        },
+        "key": {
+          "type": "string"
+        },
+        "style": {
+          "$ref": "#/definitions/StyleWithShadow"
+        },
+        "text": {
+          "type": "string"
+        },
+        "type": {
+          "const": "shadow",
+          "type": "string"
+        },
+        "wrap": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "StandardPageSize": {
+      "enum": [
+        "4A0",
+        "2A0",
+        "A0",
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "A8",
+        "A9",
+        "A10",
+        "B0",
+        "B1",
+        "B2",
+        "B3",
+        "B4",
+        "B5",
+        "B6",
+        "B7",
+        "B8",
+        "B9",
+        "B10",
+        "C0",
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6",
+        "C7",
+        "C8",
+        "C9",
+        "C10",
+        "RA0",
+        "RA1",
+        "RA2",
+        "RA3",
+        "RA4",
+        "SRA0",
+        "SRA1",
+        "SRA2",
+        "SRA3",
+        "SRA4",
+        "EXECUTIVE",
+        "FOLIO",
+        "LEGAL",
+        "LETTER",
+        "TABLOID",
+        "ID1"
+      ],
+      "type": "string"
+    },
+    "StyleWithEvaluation": {
+      "additionalProperties": false,
+      "properties": {
+        "alignContent": {
+          "type": "string"
+        },
+        "alignItems": {
+          "type": "string"
+        },
+        "alignSelf": {
+          "type": "string"
+        },
+        "backgroundColor": {
+          "type": "string"
+        },
+        "border": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderBottom": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderBottomColor": {
+          "type": "string"
+        },
+        "borderBottomLeftRadius": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderBottomRightRadius": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderBottomStyle": {
+          "type": "string"
+        },
+        "borderBottomWidth": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderColor": {
+          "type": "string"
+        },
+        "borderLeft": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderLeftColor": {
+          "type": "string"
+        },
+        "borderLeftStyle": {
+          "type": "string"
+        },
+        "borderLeftWidth": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderRadius": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderRight": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderRightColor": {
+          "type": "string"
+        },
+        "borderRightStyle": {
+          "type": "string"
+        },
+        "borderRightWidth": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderStyle": {
+          "type": "string"
+        },
+        "borderTop": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderTopColor": {
+          "type": "string"
+        },
+        "borderTopLeftRadius": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderTopRightRadius": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderTopStyle": {
+          "type": "string"
+        },
+        "borderTopWidth": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderWidth": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "bottom": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "color": {
+          "type": "string"
+        },
+        "display": {
+          "type": "string"
+        },
+        "flex": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "flexBasis": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "flexDirection": {
+          "type": "string"
+        },
+        "flexFlow": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "flexGrow": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "flexShrink": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "flexWrap": {
+          "type": "string"
+        },
+        "fontFamily": {
+          "type": "string"
+        },
+        "fontSize": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "fontStyle": {
+          "type": "string"
+        },
+        "fontWeight": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "const": "thin",
+              "type": "string"
+            },
+            {
+              "const": "hairline",
+              "type": "string"
+            },
+            {
+              "const": "ultralight",
+              "type": "string"
+            },
+            {
+              "const": "extralight",
+              "type": "string"
+            },
+            {
+              "const": "light",
+              "type": "string"
+            },
+            {
+              "const": "normal",
+              "type": "string"
+            },
+            {
+              "const": "medium",
+              "type": "string"
+            },
+            {
+              "const": "semibold",
+              "type": "string"
+            },
+            {
+              "const": "demibold",
+              "type": "string"
+            },
+            {
+              "const": "bold",
+              "type": "string"
+            },
+            {
+              "const": "ultrabold",
+              "type": "string"
+            },
+            {
+              "const": "extrabold",
+              "type": "string"
+            },
+            {
+              "const": "heavy",
+              "type": "string"
+            },
+            {
+              "const": "black",
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "height": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "justifyContent": {
+          "type": "string"
+        },
+        "left": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "letterSpacing": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "lineHeight": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "margin": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "marginBottom": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "marginHorizontal": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "marginLeft": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "marginRight": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "marginTop": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "marginVertical": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "maxHeight": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "maxLines": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "maxWidth": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "minHeight": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "minWidth": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "objectFit": {
+          "type": "string"
+        },
+        "objectPosition": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "objectPositionX": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "objectPositionY": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "opacity": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "overflow": {
+          "type": "string"
+        },
+        "padding": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "paddingBottom": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "paddingHorizontal": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "paddingLeft": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "paddingRight": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "paddingTop": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "paddingVertical": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "position": {
+          "type": "string"
+        },
+        "right": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "textAlign": {
+          "type": "string"
+        },
+        "textDecoration": {
+          "type": "string"
+        },
+        "textDecorationColor": {
+          "type": "string"
+        },
+        "textDecorationStyle": {
+          "type": "string"
+        },
+        "textIndent": {
+          "anyOf": [
+            {},
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "textOverflow": {
+          "type": "string"
+        },
+        "textTransform": {
+          "type": "string"
+        },
+        "top": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "transform": {
+          "type": "string"
+        },
+        "transformOrigin": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "transformOriginX": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "transformOriginY": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "width": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "zIndex": {
+          "type": [
+            "number",
+            "string"
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "StyleWithShadow": {
+      "additionalProperties": false,
+      "properties": {
+        "alignContent": {
+          "enum": [
+            "flex-start",
+            "flex-end",
+            "center",
+            "stretch",
+            "space-between",
+            "space-around"
+          ],
+          "type": "string"
+        },
+        "alignItems": {
+          "enum": [
+            "flex-start",
+            "flex-end",
+            "center",
+            "stretch",
+            "baseline"
+          ],
+          "type": "string"
+        },
+        "alignSelf": {
+          "enum": [
+            "auto",
+            "flex-start",
+            "flex-end",
+            "center",
+            "baseline",
+            "stretch"
+          ],
+          "type": "string"
+        },
+        "backgroundColor": {
+          "type": "string"
+        },
+        "border": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderBottom": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderBottomColor": {
+          "type": "string"
+        },
+        "borderBottomLeftRadius": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderBottomRightRadius": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderBottomStyle": {
+          "enum": [
+            "dashed",
+            "dotted",
+            "solid"
+          ],
+          "type": "string"
+        },
+        "borderBottomWidth": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderColor": {
+          "type": "string"
+        },
+        "borderLeft": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderLeftColor": {
+          "type": "string"
+        },
+        "borderLeftStyle": {
+          "enum": [
+            "dashed",
+            "dotted",
+            "solid"
+          ],
+          "type": "string"
+        },
+        "borderLeftWidth": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderRadius": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderRight": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderRightColor": {
+          "type": "string"
+        },
+        "borderRightStyle": {
+          "enum": [
+            "dashed",
+            "dotted",
+            "solid"
+          ],
+          "type": "string"
+        },
+        "borderRightWidth": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderStyle": {
+          "enum": [
+            "dashed",
+            "dotted",
+            "solid"
+          ],
+          "type": "string"
+        },
+        "borderTop": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderTopColor": {
+          "type": "string"
+        },
+        "borderTopLeftRadius": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderTopRightRadius": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderTopStyle": {
+          "enum": [
+            "dashed",
+            "dotted",
+            "solid"
+          ],
+          "type": "string"
+        },
+        "borderTopWidth": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "borderWidth": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "bottom": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "color": {
+          "type": "string"
+        },
+        "display": {
+          "enum": [
+            "flex",
+            "none"
+          ],
+          "type": "string"
+        },
+        "flex": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "flexBasis": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "flexDirection": {
+          "enum": [
+            "row",
+            "row-reverse",
+            "column",
+            "column-reverse"
+          ],
+          "type": "string"
+        },
+        "flexFlow": {
+          "type": "number"
+        },
+        "flexGrow": {
+          "type": "number"
+        },
+        "flexShrink": {
+          "type": "number"
+        },
+        "flexWrap": {
+          "enum": [
+            "nowrap",
+            "wrap",
+            "wrap-reverse"
+          ],
+          "type": "string"
+        },
+        "fontFamily": {
+          "type": "string"
+        },
+        "fontSize": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "fontStyle": {
+          "type": "string"
+        },
+        "fontWeight": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "const": "thin",
+              "type": "string"
+            },
+            {
+              "const": "hairline",
+              "type": "string"
+            },
+            {
+              "const": "ultralight",
+              "type": "string"
+            },
+            {
+              "const": "extralight",
+              "type": "string"
+            },
+            {
+              "const": "light",
+              "type": "string"
+            },
+            {
+              "const": "normal",
+              "type": "string"
+            },
+            {
+              "const": "medium",
+              "type": "string"
+            },
+            {
+              "const": "semibold",
+              "type": "string"
+            },
+            {
+              "const": "demibold",
+              "type": "string"
+            },
+            {
+              "const": "bold",
+              "type": "string"
+            },
+            {
+              "const": "ultrabold",
+              "type": "string"
+            },
+            {
+              "const": "extrabold",
+              "type": "string"
+            },
+            {
+              "const": "heavy",
+              "type": "string"
+            },
+            {
+              "const": "black",
+              "type": "string"
+            }
+          ]
+        },
+        "height": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "justifyContent": {
+          "enum": [
+            "flex-start",
+            "flex-end",
+            "center",
+            "space-around",
+            "space-between",
+            "space-evenly"
+          ],
+          "type": "string"
+        },
+        "left": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "letterSpacing": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "lineHeight": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "margin": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "marginBottom": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "marginHorizontal": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "marginLeft": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "marginRight": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "marginTop": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "marginVertical": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "maxHeight": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "maxLines": {
+          "type": "number"
+        },
+        "maxWidth": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "minHeight": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "minWidth": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "objectFit": {
+          "type": "string"
+        },
+        "objectPosition": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "objectPositionX": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "objectPositionY": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "opacity": {
+          "type": "number"
+        },
+        "overflow": {
+          "const": "hidden",
+          "type": "string"
+        },
+        "padding": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "paddingBottom": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "paddingHorizontal": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "paddingLeft": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "paddingRight": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "paddingTop": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "paddingVertical": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "position": {
+          "enum": [
+            "absolute",
+            "relative"
+          ],
+          "type": "string"
+        },
+        "right": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "shadowColor": {
+          "type": "string"
+        },
+        "shadowOpacity": {
+          "type": "number"
+        },
+        "shadowTranslate": {
+          "type": "number"
+        },
+        "shadowTranslateX": {
+          "type": "number"
+        },
+        "shadowTranslateY": {
+          "type": "number"
+        },
+        "textAlign": {
+          "enum": [
+            "left",
+            "right",
+            "center",
+            "justify"
+          ],
+          "type": "string"
+        },
+        "textDecoration": {
+          "enum": [
+            "line-through",
+            "underline",
+            "none",
+            "line-through underline",
+            "underline line-through"
+          ],
+          "type": "string"
+        },
+        "textDecorationColor": {
+          "type": "string"
+        },
+        "textDecorationStyle": {
+          "type": "string"
+        },
+        "textIndent": {},
+        "textOverflow": {
+          "const": "ellipsis",
+          "type": "string"
+        },
+        "textTransform": {
+          "enum": [
+            "capitalize",
+            "lowercase",
+            "uppercase"
+          ],
+          "type": "string"
+        },
+        "top": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "transform": {
+          "type": "string"
+        },
+        "transformOrigin": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "transformOriginX": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "transformOriginY": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "width": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "zIndex": {
+          "type": [
+            "number",
+            "string"
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "TextElementDeclaration": {
+      "additionalProperties": false,
+      "properties": {
+        "break": {
+          "type": "boolean"
+        },
+        "children": {
+          "items": {
+            "$ref": "#/definitions/TextElementDeclaration"
+          },
+          "type": "array"
+        },
+        "classes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "comment": {
+          "type": "string"
+        },
+        "condition": {
+          "type": "string"
+        },
+        "debug": {
+          "type": "boolean"
+        },
+        "fixed": {
+          "type": "boolean"
+        },
+        "key": {
+          "type": "string"
+        },
+        "style": {
+          "$ref": "#/definitions/StyleWithEvaluation"
+        },
+        "text": {
+          "type": "string"
+        },
+        "type": {
+          "const": "text",
+          "type": "string"
+        },
+        "wrap": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "ViewElementDeclaration": {
+      "additionalProperties": false,
+      "properties": {
+        "break": {
+          "type": "boolean"
+        },
+        "children": {
+          "items": {
+            "$ref": "#/definitions/AnyElementDeclaration"
+          },
+          "type": "array"
+        },
+        "classes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "comment": {
+          "type": "string"
+        },
+        "condition": {
+          "type": "string"
+        },
+        "debug": {
+          "type": "boolean"
+        },
+        "fixed": {
+          "type": "boolean"
+        },
+        "key": {
+          "type": "string"
+        },
+        "style": {
+          "$ref": "#/definitions/StyleWithEvaluation"
+        },
+        "type": {
+          "const": "view",
+          "type": "string"
+        },
+        "wrap": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "children"
+      ],
+      "type": "object"
+    }
+  }
+}

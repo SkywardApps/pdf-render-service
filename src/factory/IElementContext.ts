@@ -1,5 +1,6 @@
 import { PdfRequest } from '../wire/PdfRequest';
 import { Style } from '@react-pdf/types';
+import { StyleWithEvaluation } from '../wire/ElementDeclaration';
 
 export interface IElementContext
 {
@@ -13,7 +14,7 @@ export interface IElementContext
   popData():void;
 
   // Given a list of class names to apply and an element-level style declaration, derive the final style
-  buildFinalStyle(classes: string[], style: Style): Style;
+  buildFinalStyle(classes: string[], style: StyleWithEvaluation): Style;
 
   // Given a string that may have interpolation templates embedded, and any extra local variables to give access to,
   // substitute any templates and return the result
@@ -27,4 +28,10 @@ export interface IElementContext
 
   // Dereference is used to interpret a plan js string.  Used mainly for the 'basis' property of a loop
   dereference(name: string) : any;
+
+  // Load a font by family name
+  loadReferencedFonts(fontFamily: string) : Promise<void>;
+
+  // Test if a font is known
+  fontIsRegistered(fontFamily: string) : boolean;
 }
