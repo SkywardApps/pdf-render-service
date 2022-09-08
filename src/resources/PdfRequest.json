@@ -197,6 +197,9 @@
         "size": {
           "$ref": "#/definitions/StandardPageSize"
         },
+        "strict": {
+          "type": "boolean"
+        },
         "styles": {
           "additionalProperties": {
             "$ref": "#/definitions/StyleWithEvaluation"

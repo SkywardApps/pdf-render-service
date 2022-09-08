@@ -16,7 +16,10 @@ const mkdir = promisify(fs.mkdir);
 /// This represents the handling of incoming PDF creation requests
 export class PdfController
 {
-    public constructor(private request: IncomingMessage, private res: ServerResponse, private logger:ILogger, private config: { GoogleApiKey: string }) { }
+    public constructor(private request: IncomingMessage, private res: ServerResponse, private logger:ILogger, private config: {
+        ValidateApiPayloads: boolean; 
+        GoogleApiKey: string 
+    }) { }
 
     private body = '';
 
@@ -45,8 +48,9 @@ export class PdfController
             this.logger.info(`${(end-start)/1000} Parsed request POST ${this.request.url}` );
 
             start = Date.now();
-            if(!validatePdfRequest(postBody))
+            if((this.config.ValidateApiPayloads || postBody.strict) && !validatePdfRequest(postBody))
 			{
+                this.logger.info("Validating the payload");
 				// Capture the validation errors and throw the exception.
 				const errors = validatePdfRequest.errors;
 				this.logger.error(`Errors validating an uploaded pdf request`, {

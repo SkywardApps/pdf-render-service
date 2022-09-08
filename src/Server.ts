@@ -41,7 +41,8 @@ export const server = (request: IncomingMessage, res: ServerResponse, logger:ILo
 
     // Create the controller that'll actually process the request.
     const server = new PdfController(request, res, logger, {
-        GoogleApiKey: process.env.GOOGLEAPIKEY ?? 'UNKNOWN'
+        GoogleApiKey: process.env.GOOGLEAPIKEY ?? 'UNKNOWN',
+        ValidateApiPayloads: process.env.VALIDATEAPIPAYLOADS === 'strict'
     });
 
     // In theory there could be a PUT or DELETE so verify 

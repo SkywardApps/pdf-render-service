@@ -29,4 +29,7 @@ export interface PdfRequest {
 
   // The layout and construction of the pages themselves. May reference styles or data.
   pages: PageElementDeclaration[];
+
+  // Allow the request to opt-in to strict type-checking.
+  strict?: boolean;
 }
