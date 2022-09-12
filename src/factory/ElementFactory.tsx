@@ -223,11 +223,11 @@ export class ElementFactory implements IElementContext, IElementFactory
   private inferElementType(element: ElementDeclaration) : ElementTypes {
     let elementType: ElementTypes | undefined = undefined;
 
-    if ((element as any).text) {
+    if ((element as any).text !== undefined) {
       elementType = 'text';
     }
 
-    if ((element as any).src) {
+    if ((element as any).src !== undefined) {
       if (!!elementType) {
         this.logger.error(`Inferred a node type of ${elementType} but also found a 'src' attribute`);
         throw new Error(`Inferred a node type of ${elementType} but also found a 'src' attribute`);
@@ -235,7 +235,7 @@ export class ElementFactory implements IElementContext, IElementFactory
       elementType = 'image';
     }
 
-    if ((element as any).children) {
+    if ((element as any).children !== undefined) {
       if (!!elementType) {
         this.logger.error(`Inferred a node type of ${elementType} but also found a 'children' attribute`);
         throw new Error(`Inferred a node type of ${elementType} but also found a 'children' attribute`);
@@ -243,7 +243,7 @@ export class ElementFactory implements IElementContext, IElementFactory
       elementType = 'view';
     }
 
-    if ((element as any).basis && (element as any).loop) {
+    if ((element as any).basis && (element as any).loop !== undefined) {
       if (!!elementType) {
         this.logger.error(`Inferred a node type of ${elementType} but also found a 'basis' attribute`);
         throw new Error(`Inferred a node type of ${elementType} but also found a 'basis' attribute`);
