@@ -15,9 +15,9 @@ export const createListElement = async (element: ListElementDeclaration, factory
     const key = createElementKey('list', element);
     // If a header was supplied, create it
     // Make sure it is fixed in place (unless explicitly set not to be)
-    const headerElement = header ? factory.createElement(Object.assign({}, header, {fixed:true}), [...stack,  key+'.header']) : <></>;
+    const headerElement = header ? await factory.createElement(Object.assign({}, header, {fixed:true}), [...stack,  key+'.header']) : <></>;
     // Do the same for the footer
-    const footerElement = footer ? factory.createElement(Object.assign({}, footer, {fixed:true}), [...stack, key+'.footer']) : <></>;
+    const footerElement = footer ? await factory.createElement(Object.assign({}, footer, {fixed:true}), [...stack, key+'.footer']) : <></>;
     // Determine what array we need to loop over
     const dataBasis = context.dereference(basis) as any[];
     logger.debug(`<List> dataBasis=${basis}`);
