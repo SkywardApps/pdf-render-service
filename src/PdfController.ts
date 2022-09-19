@@ -8,6 +8,7 @@ import path from 'path';
 import {tmpdir} from 'os';
 import {promisify} from 'util';
 import { ILogger } from './ILogger';
+import { validatePdfRequest } from './validatePdfRequest';
 
 // We prefer async-await where we can
 const mkdir = promisify(fs.mkdir);
@@ -15,7 +16,10 @@ const mkdir = promisify(fs.mkdir);
 /// This represents the handling of incoming PDF creation requests
 export class PdfController
 {
-    public constructor(private request: IncomingMessage, private res: ServerResponse, private logger:ILogger) { }
+    public constructor(private request: IncomingMessage, private res: ServerResponse, private logger:ILogger, private config: {
+        ValidateApiPayloads: boolean; 
+        GoogleApiKey: string 
+    }) { }
 
     private body = '';
 
@@ -43,6 +47,22 @@ export class PdfController
             let end = Date.now();
             this.logger.info(`${(end-start)/1000} Parsed request POST ${this.request.url}` );
 
+            start = Date.now();
+            if((this.config.ValidateApiPayloads || postBody.strict) && !validatePdfRequest(postBody))
+			{
+                this.logger.info("Validating the payload");
+				// Capture the validation errors and throw the exception.
+				const errors = validatePdfRequest.errors;
+				this.logger.error(`Errors validating an uploaded pdf request`, {
+					errors
+				});
+                this.res.statusCode = 400;
+                this.res.end(`The request was not valid: ${JSON.stringify(errors, null, 2)}.`);
+                return;
+			}
+            end = Date.now();
+            this.logger.info(`${(end-start)/1000} Validated request POST ${this.request.url}`);
+
             // Create a temporary folder for our output, if needed
             const tmpPath = path.normalize(`${tmpdir()}/pdf-renderer`)
             try{
@@ -54,7 +74,8 @@ export class PdfController
                 // is the only safe way to handle it.  If we check if it exists before, there's
                 // no guarantee that won't change anyway, so we'd still have to handle this
                 // error.
-                if(err?.code !== 'EEXIST')
+                const errAny = err as any;
+                if(errAny?.code !== 'EEXIST')
                     throw err;
             }
 
@@ -66,19 +87,32 @@ export class PdfController
             start = Date.now();
             // server code
             // Create the factory that will generate nodes based on incoming json
-            const factory = new ElementFactory(postBody, this.logger);
+            const factory = new ElementFactory(postBody, this.logger, this.config.GoogleApiKey);
 
             try{
                 // Transform the incoming json into a react PDF element tree
-                rootNode = factory.generate();
+                rootNode = await factory.generate();
                 end = Date.now();
                 this.logger.info(`${(end-start)/1000} Generated request POST ${this.request.url}` );
             }
             catch (err) {
                 this.logger.error(`There was an error thrown from the generation process for POST ${this.request.url}`);
-                this.logger.error(err.message)
-                this.res.statusCode = 500;
-                this.res.end(`Error generating the file: ${err}.`);
+                if(err instanceof Error)
+                {
+                    this.logger.error(err);
+                    this.res.statusCode = 400;
+                    let errorMessage = `Error (${err.name}) rendering the file: ${err.message}`;
+                    if((err as any).renderStack)
+                    {
+                        errorMessage += '\nRender Stack: ' + ((err as any).renderStack as string[]).join(' > ');
+                    }
+                    this.res.end(errorMessage);
+                }
+                else
+                {
+                    this.res.statusCode = 500;
+                    this.res.end(`Error rendering the file: ${err}.`);
+                }
                 return;
             }
 
@@ -93,7 +127,12 @@ export class PdfController
             }
             catch (err) {
                 this.logger.error(`There was an error thrown from the rendering process for POST ${this.request.url}`);
-                this.logger.error(err.message)
+
+                const errAny = err as any;
+                if(errAny.message)
+                {
+                    this.logger.error(errAny.message);
+                }
                 this.res.statusCode = 500;
                 this.res.end(`Error rendering the file: ${err}.`);
                 return;
@@ -115,7 +154,7 @@ export class PdfController
                     }
                     else {
                         // Set the filename to be the title, getting rid of invalid characters
-                        const safeFileName = factory.finalizeString(postBody.title).replace(/[^A-Za-z0-9_.-] /g, '_');
+                        const safeFileName = factory.finalizeString(postBody.title ?? 'document').replace(/[^A-Za-z0-9_.-] /g, '_');
                         // set Content-type and send data
                         this.res.setHeader('Content-type', 'application/pdf');
                         this.res.setHeader('Content-disposition', `attachment; filename="${safeFileName}.pdf"`);
@@ -131,9 +170,17 @@ export class PdfController
                     // If there was an error in the responding code, instead send an error.
                     // There's a possibility this will be invalid if for some reason we get part way
                     // through responding above.
-                    this.logger.error(e);
+                    const errAny = e as any;
+                    this.logger.error(errAny);
                     this.res.statusCode = 500;
-                    this.res.end(`Error getting the file: ${e.toString()}.`);
+                    if(errAny.toString)
+                    {
+                        this.res.end(`Error getting the file: ${errAny.toString()}.`);
+                    }
+                    else
+                    {
+                        this.res.end(`Error getting the file: ${errAny}.`);
+                    }
                     return;
                 }
             });
@@ -141,9 +188,17 @@ export class PdfController
         catch(e)
         {
             // If there was an error in the generating code, send an error.
-            this.logger.error(e);
+            const errAny = e as any;
+            this.logger.error(errAny);
             this.res.statusCode = 500;
-            this.res.end(`Error generating the pdf: ${e.toString()}.`);
+            if(errAny.toString)
+            {
+                this.res.end(`Error generating the pdf: ${errAny.toString()}.`);
+            }
+            else
+            {
+                this.res.end(`Error generating the pdf: ${errAny}.`);
+            }
             return;
         }
     };

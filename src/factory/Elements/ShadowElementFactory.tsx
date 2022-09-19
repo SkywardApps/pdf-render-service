@@ -1,4 +1,4 @@
-import { TextElementDeclaration } from '../../wire/ElementDeclaration';
+import { StyleWithShadow, TextElementDeclaration } from '../../wire/ElementDeclaration';
 import { IElementFactory } from '../IElementFactory';
 import { IElementContext } from '../IElementContext';
 import { View, Text } from '@react-pdf/renderer';
@@ -8,13 +8,6 @@ import { ILogger } from '../../ILogger';
 import { v4 } from 'uuid';
 import { finalizeBoolean } from '../../helpers/FinalizeHelpers';
 
-type StyleWithShadow = Style & {
-    shadowColor?:string,
-    shadowOpacity?:number,
-    shadowTranslateX?:number,
-    shadowTranslateY?:number,
-    shadowTranslate?:number,
-};
 
 export const defaultShadowColor = '#000000';
 export const defaultShadowOpacity = 0.5;
@@ -25,10 +18,10 @@ export const defaultShadowTranslate = 1;
 //  * shadowColor (default black)
 //  * shadowOpacity (default 0.5)
 //  * shadowTranslate (default 1)
-export const createShadowElement = (element: TextElementDeclaration, factory:IElementFactory, context:IElementContext, logger:ILogger): React.ReactElement => {
+export const createShadowElement = async (element: TextElementDeclaration, factory:IElementFactory, context:IElementContext, stack: string[], logger:ILogger): Promise<React.ReactElement> => {
     const { style, text, classes, debug} = element;
-    const finalStyle = context.buildFinalStyle(classes, style) as StyleWithShadow;
-    const renderFunction = context.finalizeStringDeferred(text);
+    const finalStyle = context.buildFinalStyle(classes ?? [], style ?? {}) as StyleWithShadow;
+    const renderFunction = context.finalizeStringDeferred(text ?? "");
     logger.debug(`<Shadow> ${text}`);
 
     const mustBreak = finalizeBoolean(element.break, context);
