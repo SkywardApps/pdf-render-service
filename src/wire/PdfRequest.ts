@@ -3,7 +3,7 @@ import {
   StandardPageSize,
   Orientation,
 } from '@react-pdf/types';
-import { ElementDeclaration, PageElementDeclaration, StyleWithEvaluation } from './ElementDeclaration';
+import { PageElementDeclaration, StyleWithEvaluation } from './ElementDeclaration';
 
 // This defines the expected incoming request format
 export interface PdfRequest {

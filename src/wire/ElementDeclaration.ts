@@ -7,11 +7,11 @@ import {
 export type ElementTypes = 'view'|'image'|'text'|'list'|'shadow'|'page';
 
 export type StyleWithShadow = Style & {
-  shadowColor?:string,
-  shadowOpacity?:number,
-  shadowTranslateX?:number,
-  shadowTranslateY?:number,
-  shadowTranslate?:number,
+  shadowColor?: string,
+  shadowOpacity?: string | number,
+  shadowTranslateX?: string | number,
+  shadowTranslateY?: string | number,
+  shadowTranslate?: string | number,
 };
 
 export type StyleWithEvaluation = {
@@ -20,20 +20,20 @@ export type StyleWithEvaluation = {
 
 export interface ElementDeclaration {
   type?: ElementTypes;
-  fixed?: boolean;
-  break?:boolean;
-  condition?:string | undefined;
-  key?:string;
-  comment?:string;
+  fixed?: string | boolean;
+  break?: string | boolean;
+  condition?: string | undefined;
+  key?: string;
+  comment?: string;
 }
 
 
 export interface ListElementDeclaration extends ElementDeclaration
 {
   type?: 'list';
-  header?:AnyElementDeclaration;
-  footer?:AnyElementDeclaration;
-  basis:string;
+  header?: AnyElementDeclaration;
+  footer?: AnyElementDeclaration;
+  basis: string;
   loop: AnyElementDeclaration | AnyElementDeclaration[];
 }
 
@@ -57,31 +57,31 @@ export interface PageElementDeclaration extends StylableElementDeclaration
 export interface ViewElementDeclaration extends StylableElementDeclaration
 {
   type?: 'view';
-  wrap?:boolean;
+  wrap?: string | boolean;
   children: AnyElementDeclaration[];
 }
 
 export interface ShadowElementDeclaration extends StylableElementDeclaration
 {
   type?: 'shadow';
-  wrap?:boolean;
-  text?:string;
-  style?:StyleWithShadow;
+  wrap?: string | boolean;
+  text?: string;
+  style?: StyleWithShadow;
 }
 
 export interface TextElementDeclaration extends StylableElementDeclaration
 {
   type?: 'text';
-  wrap?:boolean;
-  text?:string;
+  wrap?: string | boolean;
+  text?: string;
   children?: TextElementDeclaration[] | undefined;
 }
 
 export interface ImageElementDeclaration extends StylableElementDeclaration
 {
   type?: 'image';
-  src:string;
-  cache?:boolean;
+  src: string;
+  cache?: string | boolean;
 }
 
 export type AnyElementDeclaration = ImageElementDeclaration | TextElementDeclaration | ShadowElementDeclaration | ViewElementDeclaration | ListElementDeclaration;

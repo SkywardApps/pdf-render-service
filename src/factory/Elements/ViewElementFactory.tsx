@@ -35,7 +35,7 @@ export const createViewElement = async (element: ViewElementDeclaration, factory
   }
 
   return (
-    <View key={v4()} style={finalStyle} wrap={canWrap} break={mustBreak} debug={context.config.debug || debug} fixed={isFixed}>
+    <View key={`${key}.${v4()}`} style={finalStyle} wrap={canWrap} break={mustBreak} debug={context.config.debug || debug} fixed={isFixed}>
       {renderedChildren}
     </View>
   );

@@ -26,10 +26,16 @@
       "additionalProperties": false,
       "properties": {
         "break": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "boolean"
+          ]
         },
         "cache": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "boolean"
+          ]
         },
         "classes": {
           "items": {
@@ -47,7 +53,10 @@
           "type": "boolean"
         },
         "fixed": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "boolean"
+          ]
         },
         "key": {
           "type": "string"
@@ -75,7 +84,10 @@
           "type": "string"
         },
         "break": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "boolean"
+          ]
         },
         "comment": {
           "type": "string"
@@ -84,7 +96,10 @@
           "type": "string"
         },
         "fixed": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "boolean"
+          ]
         },
         "footer": {
           "$ref": "#/definitions/AnyElementDeclaration"
@@ -130,7 +145,10 @@
       "additionalProperties": false,
       "properties": {
         "break": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "boolean"
+          ]
         },
         "children": {
           "items": {
@@ -154,7 +172,10 @@
           "type": "boolean"
         },
         "fixed": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "boolean"
+          ]
         },
         "key": {
           "type": "string"
@@ -219,7 +240,10 @@
       "additionalProperties": false,
       "properties": {
         "break": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "boolean"
+          ]
         },
         "classes": {
           "items": {
@@ -237,7 +261,10 @@
           "type": "boolean"
         },
         "fixed": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "boolean"
+          ]
         },
         "key": {
           "type": "string"
@@ -253,7 +280,10 @@
           "type": "string"
         },
         "wrap": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "boolean"
+          ]
         }
       },
       "type": "object"
@@ -1326,16 +1356,28 @@
           "type": "string"
         },
         "shadowOpacity": {
-          "type": "number"
+          "type": [
+            "string",
+            "number"
+          ]
         },
         "shadowTranslate": {
-          "type": "number"
+          "type": [
+            "string",
+            "number"
+          ]
         },
         "shadowTranslateX": {
-          "type": "number"
+          "type": [
+            "string",
+            "number"
+          ]
         },
         "shadowTranslateY": {
-          "type": "number"
+          "type": [
+            "string",
+            "number"
+          ]
         },
         "textAlign": {
           "enum": [
@@ -1421,7 +1463,10 @@
       "additionalProperties": false,
       "properties": {
         "break": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "boolean"
+          ]
         },
         "children": {
           "items": {
@@ -1445,7 +1490,10 @@
           "type": "boolean"
         },
         "fixed": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "boolean"
+          ]
         },
         "key": {
           "type": "string"
@@ -1461,7 +1509,10 @@
           "type": "string"
         },
         "wrap": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "boolean"
+          ]
         }
       },
       "type": "object"
@@ -1470,7 +1521,10 @@
       "additionalProperties": false,
       "properties": {
         "break": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "boolean"
+          ]
         },
         "children": {
           "items": {
@@ -1494,7 +1548,10 @@
           "type": "boolean"
         },
         "fixed": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "boolean"
+          ]
         },
         "key": {
           "type": "string"
@@ -1507,7 +1564,10 @@
           "type": "string"
         },
         "wrap": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "boolean"
+          ]
         }
       },
       "required": [
