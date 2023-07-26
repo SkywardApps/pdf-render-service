@@ -5,26 +5,26 @@ FROM pdf_base as pdf_debug
 # So do nothing app related as the files won't 
 # be present yet. 
 
-FROM node:14 as pdf_build
+FROM node:18 as pdf_build
 
 WORKDIR /src
 COPY package.json .
 COPY yarn.lock .
 COPY tslint.json .
 COPY tsconfig.json .
-RUN yarn install --frozen-lockfile
+COPY .yarnrc.yml .
+COPY .yarn ./.yarn
+RUN yarn --immutable
+
 COPY src ./src
 COPY fonts ./fonts
 
 RUN yarn build
 
-# remove development dependencies
-RUN npm prune --production
-
 # run node prune
 RUN npx node-prune
 
-FROM node:14 as pdf_release
+FROM node:18 as pdf_release
 
 # Run everything after as non-privileged user.
 RUN install -m 775 -d /usr/src/app
