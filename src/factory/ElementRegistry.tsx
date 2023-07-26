@@ -7,6 +7,7 @@ import { createListElement } from './Elements/ListElementFactory';
 import { createPageElement } from './Elements/PageElementFactory';
 import { createShadowElement } from './Elements/ShadowElementFactory';
 import { ILogger } from '../ILogger';
+import { createLinkElement } from './Elements/LinkElementFactory';
 
 // Define the function signature that we use to create elements
 export type ElementFactoryFunction = (e: any, factory:IElementFactory, context:IElementContext, stack: string[], logger:ILogger) => Promise<React.ReactElement | React.ReactElement[]>;
@@ -40,4 +41,5 @@ staticElementRegistry.register('view', createViewElement);
 staticElementRegistry.register('list', createListElement);
 staticElementRegistry.register('shadow', createShadowElement);
 staticElementRegistry.register('page', createPageElement);
+staticElementRegistry.register('link', createLinkElement);
 
