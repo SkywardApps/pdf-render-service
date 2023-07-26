@@ -4,7 +4,7 @@ import {
   Orientation,
 } from '@react-pdf/types';
 
-export type ElementTypes = 'view'|'image'|'text'|'list'|'shadow'|'page';
+export type ElementTypes = 'view'|'image'|'text'|'list'|'shadow'|'page'|'link';
 
 export type StyleWithShadow = Style & {
   shadowColor?:string,
@@ -75,6 +75,15 @@ export interface TextElementDeclaration extends StylableElementDeclaration
   wrap?:boolean;
   text?:string;
   children?: TextElementDeclaration[] | undefined;
+}
+
+export interface LinkElementDeclaration extends StylableElementDeclaration
+{
+  type?: 'link';
+  href?:string;
+  wrap?:boolean;
+  text?:string; 
+  children?: AnyElementDeclaration[] | undefined; 
 }
 
 export interface ImageElementDeclaration extends StylableElementDeclaration
