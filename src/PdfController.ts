@@ -154,7 +154,7 @@ export class PdfController
                     }
                     else {
                         // Set the filename to be the title, getting rid of invalid characters
-                        const safeFileName = factory.finalizeString(postBody.title ?? 'document').replace(/[^A-Za-z0-9_.-] /g, '_');
+                        const safeFileName = factory.finalizeString(postBody.title ?? 'document').replace(/[^A-Za-z0-9_.-]/g, '_');
                         // set Content-type and send data
                         this.res.setHeader('Content-type', 'application/pdf');
                         this.res.setHeader('Content-disposition', `attachment; filename="${safeFileName}.pdf"`);
