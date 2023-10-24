@@ -16,7 +16,7 @@ export const createTextElement = async (element: TextElementDeclaration, factory
   // Calculate the final style to apply considering any class names included
   const finalStyle = context.buildFinalStyle(classes ?? [], style ?? {});
   const mustBreak = finalizeBoolean(element.break, context);
-  const canWrap = finalizeBoolean(element.wrap, context);
+  const canWrap = finalizeBoolean(element.wrap ?? 'true', context);
   const isFixed = finalizeBoolean(element.fixed, context);
 
   // We create a render function, rather than just a simple string, so that we can account for
@@ -54,6 +54,7 @@ export const createTextElement = async (element: TextElementDeclaration, factory
     </Text>;
   }
 
+  const preRendered = context.shouldPrerender() ? renderFunction({pageNumber:100, totalPages:100}) : undefined;
   return (
     <Text
       key={v4()}
@@ -65,7 +66,9 @@ export const createTextElement = async (element: TextElementDeclaration, factory
       render={({pageNumber, totalPages}) => {
         return renderFunction({pageNumber, totalPages}) || '';
       }}
-    />
+    >
+      {preRendered}
+    </Text>
   );
 };
 

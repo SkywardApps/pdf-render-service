@@ -17,7 +17,7 @@ export const createLinkElement = async (element: LinkElementDeclaration, factory
   // Calculate the final style to apply considering any class names included
   const finalStyle = context.buildFinalStyle(classes ?? [], style ?? {});
   const mustBreak = finalizeBoolean(element.break, context);
-  const canWrap = finalizeBoolean(element.wrap, context);
+  const canWrap = finalizeBoolean(element.wrap ?? 'true', context);
   const isFixed = finalizeBoolean(element.fixed, context);
   const finalText = context.finalizeString(text ?? "");
   const finalHref = context.finalizeString(href ?? "");

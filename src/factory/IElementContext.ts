@@ -34,4 +34,7 @@ export interface IElementContext
 
   // Test if a font is known
   fontIsRegistered(fontFamily: string) : boolean;
+  
+  // Should the engine pre-render text so it can be measured.
+  shouldPrerender(): unknown;
 }

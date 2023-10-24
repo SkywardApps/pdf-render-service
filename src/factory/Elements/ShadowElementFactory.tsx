@@ -25,7 +25,7 @@ export const createShadowElement = async (element: TextElementDeclaration, facto
     logger.debug(`<Shadow> ${text}`);
 
     const mustBreak = finalizeBoolean(element.break, context);
-    const canWrap = finalizeBoolean(element.wrap, context);
+    const canWrap = finalizeBoolean(element.wrap ?? 'true', context);
     const isFixed = finalizeBoolean(element.fixed, context);
 
     // What we do here is:

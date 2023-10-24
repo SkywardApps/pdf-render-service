@@ -41,6 +41,7 @@ export const createPageElement = async (element: PageElementDeclaration, factory
             style={finalStyle} 
             size={size} 
             orientation={orientation} 
+            wrap={true}
             debug={context.config.debug} >
         {renderedChildren}
         </Page>

@@ -15,7 +15,7 @@ export const createViewElement = async (element: ViewElementDeclaration, factory
   const key = createElementKey('view', element);
 
   const mustBreak = finalizeBoolean(element.break, context);
-  const canWrap = finalizeBoolean(element.wrap, context);
+  const canWrap = finalizeBoolean(element.wrap ?? 'true', context);
   const isFixed = finalizeBoolean(element.fixed, context);
 
   // Calculate the final style to apply considering any class names included

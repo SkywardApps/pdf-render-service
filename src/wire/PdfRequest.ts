@@ -32,4 +32,7 @@ export interface PdfRequest {
 
   // Allow the request to opt-in to strict type-checking.
   strict?: boolean;
+
+  // Use pre-rendering of content to allow for paragraph text measurement.
+  prerender?: boolean;
 }

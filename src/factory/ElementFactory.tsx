@@ -25,8 +25,13 @@ export class ElementFactory implements IElementContext, IElementFactory
       pages : [],
       data : {},
       styles : {},
-      title : 'PDF Document'
+      title : 'PDF Document',
+      prerender: false,
     }, config);
+  }
+  
+  shouldPrerender(): unknown {
+    return this.config.prerender ?? false;
   }
 
   async loadReferencedFonts(fontFamily: string): Promise<void> 
