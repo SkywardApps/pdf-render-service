@@ -194,6 +194,9 @@
           },
           "type": "array"
         },
+        "prerender": {
+          "type": "boolean"
+        },
         "size": {
           "$ref": "#/definitions/StandardPageSize"
         },
