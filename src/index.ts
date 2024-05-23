@@ -1,9 +1,7 @@
-
-import './metrics';
-import './trace';
 import {createServer} from 'http';
 import { server } from './Server';
 import winston from 'winston';
+
 
 // Create a logger to track activity
 const logger = winston.createLogger({

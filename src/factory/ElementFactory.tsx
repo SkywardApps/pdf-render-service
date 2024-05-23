@@ -7,7 +7,7 @@ import { IElementContext } from './IElementContext';
 import { IElementFactory } from './IElementFactory';
 import { VM } from 'vm2';
 import { ILogger } from '../ILogger';
-import { Style } from '../ReactPdfTypeHacks';
+import { Style } from '@react-pdf/types';
 import { fontIsRegistered, loadReferencedFonts } from '../fontManagement';
 import { createElementKey } from './createElementKey';
 

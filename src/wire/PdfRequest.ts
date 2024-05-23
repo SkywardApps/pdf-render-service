@@ -2,7 +2,7 @@ import {
   Style,
   StandardPageSize,
   Orientation,
-} from '../ReactPdfTypeHacks';
+} from '@react-pdf/types';
 import { ElementDeclaration, PageElementDeclaration, StyleWithEvaluation } from './ElementDeclaration';
 
 // This defines the expected incoming request format

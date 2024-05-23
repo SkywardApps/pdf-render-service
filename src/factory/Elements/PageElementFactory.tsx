@@ -8,7 +8,7 @@ import { v4 } from 'uuid';
 import {
   PageSize,
   Orientation
-} from '../../ReactPdfTypeHacks';
+} from '@react-pdf/types';
 import { createElementKey } from "../createElementKey";
 
 // Create a new page.  This must be at the top level, and are the only items allowed at the top level.
