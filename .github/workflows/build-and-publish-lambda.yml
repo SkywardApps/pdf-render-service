@@ -47,7 +47,7 @@ jobs:
             ghcr.io/skywardapps/pdf-render-lambda:latest
             ghcr.io/skywardapps/pdf-render-lambda:${{ github.sha }}
           # build on feature branches, push only on main branch
-          push: ${{ github.ref == 'refs/heads/mainline' }}
+          push: ${{ github.ref == 'refs/heads/lambda' }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
