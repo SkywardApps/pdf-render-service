@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
 import { S3Client, PutObjectCommand, PutObjectCommandInput, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import winston from 'winston';
@@ -23,6 +24,46 @@ const logger = winston.createLogger({
     })
   ]
 });
+
+let SECRETS = {
+    GOOGLEAPIKEY: process.env.GOOGLEAPIKEY,
+    STORAGE_BUCKET: process.env.STORAGE_BUCKET
+}
+
+
+const secretsManagerClient = new SecretsManagerClient({ region: "us-east-1" }); // Replace with your region
+
+// Function to fetch secret by ARN and parse the JSON value
+async function getSecretValue(secretArn: string): Promise<any> {
+    try {
+        const command = new GetSecretValueCommand({
+            SecretId: secretArn,
+        });
+
+        const response = await secretsManagerClient.send(command);
+        if (response.SecretString) {
+            // If the secret is a JSON string, parse it
+            const secretValue = JSON.parse(response.SecretString);
+            SECRETS = {
+                ...SECRETS,
+                ...secretValue
+            };
+            return;
+        } else {
+            throw new Error("Secret is in binary form, not supported in this example.");
+        }
+    } catch (err) {
+        console.error("Error fetching secret:", err);
+        throw err;
+    }
+}
+
+let secretsTask = Promise.resolve();
+if(process.env.APPSETTINGS_OVERRIDE_SECRET_ARN)
+{
+    secretsTask = getSecretValue(process.env.APPSETTINGS_OVERRIDE_SECRET_ARN);
+}
+
 
 export const handler: Handler = async (event: APIGatewayProxyEventV2, context): Promise<APIGatewayProxyResultV2> => {
     if(event.requestContext.http.method.toLowerCase() == 'get' && event.requestContext.http.path == '/')
@@ -49,8 +90,8 @@ export const handler: Handler = async (event: APIGatewayProxyEventV2, context): 
     {
         // Create the controller that'll actually process the request.
         const server = new PdfController(logger, {
-            GoogleApiKey: process.env.GOOGLEAPIKEY ?? 'UNKNOWN',
-            ValidateApiPayloads: process.env.VALIDATEAPIPAYLOADS === 'strict'
+            GoogleApiKey: SECRETS.GOOGLEAPIKEY ?? 'UNKNOWN',
+            ValidateApiPayloads: true
         });
 
         const result = await server.process(event.body!);
@@ -63,9 +104,7 @@ export const handler: Handler = async (event: APIGatewayProxyEventV2, context): 
             };
         }
 
-        logger.warn("Unexpected request", {method: event.requestContext.http.method, url:event.requestContext.http.path});
-
-        const bucketName = process.env.STORAGE_BUCKET;
+        const bucketName = SECRETS.STORAGE_BUCKET;
 
         const pathname = result.statusCode; 
         const destinationPath = `${uuid()}/${result.fileName}.pdf`;
