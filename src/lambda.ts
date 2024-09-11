@@ -27,7 +27,8 @@ const logger = winston.createLogger({
 
 let SECRETS = {
     GOOGLEAPIKEY: process.env.GOOGLEAPIKEY,
-    STORAGE_BUCKET: process.env.STORAGE_BUCKET
+    STORAGE_BUCKET: process.env.STORAGE_BUCKET,
+    VALIDATE_API_PAYLOADS: undefined
 }
 
 
@@ -66,6 +67,8 @@ if(process.env.APPSETTINGS_OVERRIDE_SECRET_ARN)
 
 
 export const handler: Handler = async (event: APIGatewayProxyEventV2, context): Promise<APIGatewayProxyResultV2> => {
+    await secretsTask;
+    
     if(event.requestContext.http.method.toLowerCase() == 'get' && event.requestContext.http.path == '/')
     {
         return {
@@ -91,7 +94,7 @@ export const handler: Handler = async (event: APIGatewayProxyEventV2, context): 
         // Create the controller that'll actually process the request.
         const server = new PdfController(logger, {
             GoogleApiKey: SECRETS.GOOGLEAPIKEY ?? 'UNKNOWN',
-            ValidateApiPayloads: true
+            ValidateApiPayloads: !!SECRETS.VALIDATE_API_PAYLOADS
         });
 
         const result = await server.process(event.body!);
