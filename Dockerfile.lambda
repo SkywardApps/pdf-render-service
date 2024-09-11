@@ -1,0 +1,34 @@
+# Build another image that's just for debugging.
+FROM pdf_base as pdf_debug
+# This is left empty because compose will mount
+# the main app directory and build at runtime.
+# So do nothing app related as the files won't 
+# be present yet. 
+
+FROM node:20 as pdf_build
+
+WORKDIR /src
+COPY package.json .
+RUN sed -i 's/index.js/lambda.js/g' package.json
+COPY yarn.lock .
+COPY tslint.json .
+COPY tsconfig.json .
+COPY .yarnrc.yml .
+COPY .yarn ./.yarn
+RUN yarn --immutable
+
+COPY src ./src
+COPY fonts ./fonts
+
+RUN yarn build
+
+# run node prune
+RUN npx node-prune
+
+FROM public.ecr.aws/lambda/nodejs:20 as pdf_release
+
+COPY --from=pdf_build /src/dist ./
+COPY --from=pdf_build /src/fonts ./fonts
+COPY --from=pdf_build /src/node_modules ./node_modules
+
+CMD ["lambda.handler"]
