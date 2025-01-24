@@ -75,11 +75,11 @@ export class PdfController
                 }).join('\n\n');
 
 				this.logger.error(`Errors validating an uploaded pdf request`, {
-                errors: validationResult.errors
+                    errors: formattedErrors
 				});
 
                 this.res.statusCode = 400;
-                body: `The request was not valid: ${JSON.stringify(errors, null, 2)}.`
+                this.res.end(`The request was not valid: ${JSON.stringify(errors, null, 2)}.`);
                 return;
 			}
             end = Date.now();

@@ -2,9 +2,7 @@ import Ajv from 'ajv';
 import { AnyValidateFunction } from 'ajv/dist/types';
 import PdfRequestSchema from './resources/PdfRequest.json';
 import { PdfRequest } from './wire/PdfRequest';
-import { VM } from 'vm2';
-import { ElementDeclaration, AnyElementDeclaration, ImageElementDeclaration, TextElementDeclaration, ListElementDeclaration, PageElementDeclaration } from './wire/ElementDeclaration';
-import axios from 'axios';
+import { AnyElementDeclaration, ImageElementDeclaration, TextElementDeclaration, ListElementDeclaration } from './wire/ElementDeclaration';
 import { loadReferencedFonts, fontIsRegistered } from './fontManagement';
 import { ILogger } from './ILogger';
 
@@ -36,14 +34,23 @@ async function validatePdfRequestEnhanced(request: PdfRequest, logger: ILogger):
     
     // First run the schema validation
     if (!validatePdfRequest(request)) {
-        return {
-            isValid: false,
-            errors: (validatePdfRequest.errors || []).map(err => ({
-                path: err.instancePath.split('/').filter(p => p),
-                message: err.message || 'Unknown validation error',
-                severity: 'error'
-            }))
-        };
+        if(request.strict) 
+        {
+            return {
+                isValid: false,
+                errors: (validatePdfRequest.errors || []).map(err => ({
+                    path: err.instancePath.split('/').filter(p => p),
+                    message: err.message || 'Unknown validation error',
+                    severity: 'error'
+                }))
+            };
+        }
+
+        errors.push(...(validatePdfRequest.errors || []).map(err => ({
+            path: err.instancePath.split('/').filter(p => p),
+            message: err.message || 'Unknown validation error',
+            severity: 'warning' as const
+        })));
     }
 
     // Validate all elements recursively
@@ -58,6 +65,7 @@ async function validatePdfRequestEnhanced(request: PdfRequest, logger: ILogger):
         }
     }
 
+    console.error(errors);
     return {
         isValid: errors.filter(e => e.severity === 'error').length === 0,
         errors
@@ -71,11 +79,6 @@ async function validateElement(
     errors: ValidationError[],
     logger: ILogger
 ): Promise<void> {
-    // Validate common properties
-    if (element.condition) {
-        validateTemplateExpression(element.condition, [...path, 'condition'], request.data, errors);
-    }
-
     // Validate style if present
     if ('style' in element && element.style) {
         validateStyle(element.style, [...path, 'style'], errors);
@@ -139,22 +142,7 @@ async function validateImageElement(
                     severity: 'error'
                 });
             }
-        } else {
-            // Validate URL format
-            new URL(src);
-            
-            // Optionally verify image exists
-            try {
-                await axios.head(src);
-            } catch (err) {
-                const message = err instanceof Error ? err.message : String(err);
-                errors.push({
-                    path: [...path, 'src'],
-                    message: `Image URL appears to be inaccessible: ${message}`,
-                    severity: 'warning'
-                });
-            }
-        }
+        } 
     } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         errors.push({
@@ -172,11 +160,6 @@ async function validateTextElement(
     errors: ValidationError[],
     logger: ILogger
 ): Promise<void> {
-    // Validate text templates
-    if (element.text) {
-        validateTemplateExpression(element.text, [...path, 'text'], request.data, errors);
-    }
-
     // Validate font usage if specified in style
     if (element.style?.fontFamily) {
         const fontFamily = element.style.fontFamily.toString();
@@ -203,18 +186,10 @@ function validateListElement(
 ): void {
     // Validate basis expression
     try {
-        const vm = new VM({
-            timeout: 150,
-            eval: false,
-            wasm: false,
-            sandbox: { data: request.data }
-        });
-        
-        const result = vm.run(element.basis);
-        if (!Array.isArray(result)) {
+        if (!element.basis?.length) {
             errors.push({
                 path: [...path, 'basis'],
-                message: `List basis must evaluate to an array, got ${typeof result}`,
+                message: `List basis must be set, got '${element.basis}'`,
                 severity: 'error'
             });
         }
@@ -233,80 +208,8 @@ function validateStyle(
     path: string[],
     errors: ValidationError[]
 ): void {
-    // Validate color formats
-    const colorProps = ['color', 'backgroundColor', 'borderColor', 'textDecorationColor'];
-    for (const prop of colorProps) {
-        if (prop in style) {
-            const color = style[prop]?.toString();
-            if (!isValidColor(color)) {
-                errors.push({
-                    path: [...path, prop],
-                    message: `Invalid color format: ${color}. Must be a valid CSS color.`,
-                    severity: 'error'
-                });
-            }
-        }
-    }
-
-    // Validate numeric values with units
-    const numericProps = ['fontSize', 'lineHeight', 'width', 'height', 'margin', 'padding'];
-    for (const prop of numericProps) {
-        if (prop in style) {
-            const value = style[prop]?.toString();
-            if (!isValidNumericValue(value)) {
-                errors.push({
-                    path: [...path, prop],
-                    message: `Invalid numeric value: ${value}. Must be a number or a valid CSS unit value.`,
-                    severity: 'error'
-                });
-            }
-        }
-    }
+   
 }
 
-function validateTemplateExpression(
-    expr: string,
-    path: string[],
-    data: any,
-    errors: ValidationError[]
-): void {
-    try {
-        const vm = new VM({
-            timeout: 150,
-            eval: false,
-            wasm: false,
-            sandbox: { data }
-        });
-        
-        vm.run(`\`${expr}\``);
-    } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        errors.push({
-            path,
-            message: `Invalid template expression "${expr}": ${message}`,
-            severity: 'error'
-        });
-    }
-}
-
-function isValidColor(color: string): boolean {
-    // Basic color name
-    if (/^[a-zA-Z]+$/.test(color)) return true;
-    // Hex color
-    if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(color)) return true;
-    // RGB/RGBA
-    if (/^rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*(?:,\s*(?:0|1|0?\.\d+)\s*)?\)$/.test(color)) return true;
-    // HSL/HSLA
-    if (/^hsla?\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*(?:,\s*(?:0|1|0?\.\d+)\s*)?\)$/.test(color)) return true;
-    return false;
-}
-
-function isValidNumericValue(value: string): boolean {
-    // Pure number
-    if (/^\d+$/.test(value)) return true;
-    // Number with valid CSS unit
-    if (/^\d+(\.\d+)?(px|em|rem|%|pt|pc|in|cm|mm|ex|ch|vw|vh|vmin|vmax)$/.test(value)) return true;
-    return false;
-}
 
 export { validatePdfRequest, validatePdfRequestEnhanced, ValidationError, ValidationResult, validateElement, validateImageElement, validateTextElement, validateListElement, validateStyle, validateTemplateExpression, isValidColor, isValidNumericValue };

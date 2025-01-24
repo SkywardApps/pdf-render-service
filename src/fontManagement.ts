@@ -1,6 +1,7 @@
 import { Font } from '@react-pdf/renderer';
 import axios from 'axios';
 import { ILogger } from './ILogger';
+import { isError } from 'util';
 
 /**
  * An internal map of all the fonts we have already loaded, since there doesn't seem to be a system for it as part of react-pdf
@@ -94,58 +95,63 @@ const mappedVariants: { [variant: string]: [string, string]} = {
  */
 export async function loadReferencedFonts(fontRequests: string[], apiKey: string, logger: ILogger)
 {
-  try
+  const exceptions: Error[] = [];
+  let googleFontResponse: IGoogleFontResponse | undefined = undefined;
+  for(const fontRequest of fontRequests)
   {
-    let googleFontResponse: IGoogleFontResponse | undefined = undefined;
-    for(const fontRequest of fontRequests)
+    try
     {
-      try
+      const knownFonts = listFonts();
+      const existingFont = knownFonts.find(ff => ff.family.toLowerCase() == fontRequest.toLowerCase());
+
+      if(existingFont)
       {
-        const knownFonts = listFonts();
-        const existingFont = knownFonts.find(ff => ff.family.toLowerCase() == fontRequest.toLowerCase());
-
-        if(existingFont)
-        {
-          logger.debug(`Skipping ${fontRequest} as it is already loaded.`)
-          continue;
-        }
-        
-        // We only fetch the drectory once, as it contains all fonts and is rarely if ever updated.
-        if(!googleFontResponse)
-        {
-          logger.info(`Loading ${fontRequest} from the google repo.`);
-          const googleApiResponse = await axios.get<IGoogleFontResponse>('https://www.googleapis.com/webfonts/v1/webfonts?key='+apiKey);
-          googleFontResponse = googleApiResponse.data;
-        }
-
-        const googleMatch = googleFontResponse.items.find(item => item.family.toLowerCase() == fontRequest.toLowerCase())
-        if(!googleMatch)
-        {
-          const allFonts = googleFontResponse.items;
-          throw new Error(`Requested a font by the name of ${fontRequest} but it was not loaded and we could not locate a match in the google API.
-Available similar fonts: ${findSimilarFonts(fontRequest, allFonts).map(f => f.family).join(', ')}`);
-        }
-
-        // Go ahead and register the url provided.
-        registerFont(fontRequest, Object.keys(googleMatch.files).map(key => ({
-          src: googleMatch.files[key],
-          fontWeight: mappedVariants[key][0],
-          fontStyle: mappedVariants[key][1]
-        })));
+        logger.debug(`Skipping ${fontRequest} as it is already loaded.`)
+        continue;
       }
-      catch(err)
+      
+      // We only fetch the drectory once, as it contains all fonts and is rarely if ever updated.
+      if(!googleFontResponse)
       {
-        throw new Error(`Exception thrown attempting to load a font '${fontRequest}' from the Google API server.
-Check your API key (set via the GOOGLEAPIKEY environment variable).
-Error details: ${err}`);
+        logger.info(`Loading ${fontRequest} from the google repo.`);
+        const googleApiResponse = await axios.get<IGoogleFontResponse>('https://www.googleapis.com/webfonts/v1/webfonts?key='+apiKey);
+        googleFontResponse = googleApiResponse.data;
+      }
+
+      const googleMatch = googleFontResponse.items.find(item => item.family.toLowerCase() == fontRequest.toLowerCase())
+      if(!googleMatch)
+      {
+        const allFonts = googleFontResponse.items;
+        exceptions.push(new Error(`Requested a font by the name of ${fontRequest} but it was not loaded and we could not locate a match in the google API.
+Available similar fonts: ${findSimilarFonts(fontRequest, allFonts).map(f => f.family).join(', ')}`));
+        continue;
+      }
+
+      // Go ahead and register the url provided.
+      registerFont(fontRequest, Object.keys(googleMatch.files).map(key => ({
+        src: googleMatch.files[key],
+        fontWeight: mappedVariants[key][0],
+        fontStyle: mappedVariants[key][1]
+      })));
+    }
+    catch(err)
+    {
+      if(isError(err))
+      {
+        exceptions.push(err);
+      }
+      else
+      {
+        exceptions.push(new Error(`Unknown error: ${err}`));
       }
     }
   }
-  catch(err)
+
+  if(exceptions.length > 0)
   {
-    throw new Error(`Exception thrown attempting to load fonts from the Google API server.
+    throw new Error(`Exception(s) thrown attempting to load fonts from the Google API server.
 Check your API key (set via the GOOGLEAPIKEY environment variable).
-Error details: ${err}`);
+Error details: ${exceptions.map(e => e.message).join('\n')}`);
   }
 }
 

@@ -24,6 +24,10 @@ export function createElementKey(elementType: string, element: ElementDeclaratio
   else if (isListDeclaration(element) && element.basis) {
     currentItemKey += `[basis=${element.basis.substring(0, 50)}]`;
   }
+  else if (element.condition)
+  {
+    currentItemKey += `[condition=${element.condition}]`;
+  }
   return currentItemKey;
 }
 
