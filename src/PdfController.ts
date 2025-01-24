@@ -8,7 +8,7 @@ import path from 'path';
 import {tmpdir} from 'os';
 import {promisify} from 'util';
 import { ILogger } from './ILogger';
-import { validatePdfRequest } from './validatePdfRequest';
+import { validatePdfRequestEnhanced, ValidationError } from './validatePdfRequest';
 
 // We prefer async-await where we can
 const mkdir = promisify(fs.mkdir);
@@ -48,16 +48,38 @@ export class PdfController
             this.logger.info(`${(end-start)/1000} Parsed request POST ${this.request.url}` );
 
             start = Date.now();
-            if((this.config.ValidateApiPayloads || postBody.strict) && !validatePdfRequest(postBody))
+            const validationResult = await validatePdfRequestEnhanced({
+                ...postBody,
+                googleApiKey: this.config.GoogleApiKey
+            }, this.logger);
+            if (!validationResult.isValid) 
 			{
                 this.logger.info("Validating the payload");
-				// Capture the validation errors and throw the exception.
-				const errors = validatePdfRequest.errors;
+                const errors = validationResult.errors;
+                
+                // Group errors by severity
+                const errorsByType = errors.reduce((acc, err) => {
+                    acc[err.severity] = acc[err.severity] || [];
+                    acc[err.severity].push(err);
+                    return acc;
+                }, {} as Record<string, ValidationError[]>);
+
+                // Format error messages by severity
+                const formattedErrors = Object.entries(errorsByType).map(([severity, errs]) => {
+                    const header = severity === 'error' ? 'Errors' : 'Warnings';
+                    const messages = errs.map(err => {
+                        const location = err.path.join('.');
+                        return `  - [${location}] ${err.message}`;
+                    }).join('\n');
+                    return `${header}:\n${messages}`;
+                }).join('\n\n');
+
 				this.logger.error(`Errors validating an uploaded pdf request`, {
-					errors
+                errors: validationResult.errors
 				});
+
                 this.res.statusCode = 400;
-                this.res.end(`The request was not valid: ${JSON.stringify(errors, null, 2)}.`);
+                body: `The request was not valid: ${JSON.stringify(errors, null, 2)}.`
                 return;
 			}
             end = Date.now();

@@ -328,3 +328,22 @@ In more complex cases (a text with children, for example) you will need to expli
     ]
 }
 ```
+
+### Additional Features and Properties
+
+* **Strict Type Checking**: Enable strict type validation by setting `strict: true` in your PDF request
+* **Pre-rendering Support**: Enable content pre-rendering for accurate paragraph text measurement with `prerender: true`
+* **Element Keys**: Add unique identifiers to elements using the `key` property for better tracking and debugging
+* **Conditional Rendering**: Use the `condition` property on any element to conditionally render it based on a JavaScript expression
+* **Element Comments**: Add `comment` properties to any element for better documentation of your template
+* **Link Elements**: Create clickable links using the `link` type with `href` and `text` properties
+* **Shadow Elements**: Create elements with shadow effects using the `shadow` type and properties:
+  * `shadowColor`: Color of the shadow
+  * `shadowOpacity`: Opacity level (0-1)
+  * `shadowTranslateX`: Horizontal shadow offset
+  * `shadowTranslateY`: Vertical shadow offset
+  * `shadowTranslate`: Uniform shadow offset
+* **Image Caching**: Control image caching behavior with the `cache` property on image elements
+* **Break Control**: Force page breaks before an element using the `break` property
+* **Wrap Control**: Control if elements can be split across pages using the `wrap` property (false prevents splitting)
+* **Debug Mode**: Enable debug visualization for specific elements using the `debug` property, or globally in the PDF request

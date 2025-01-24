@@ -154,6 +154,16 @@ export class ElementFactory implements IElementContext, IElementFactory
       if(!anyError.renderStack)
       {
         let currentItemKey = createElementKey(elementType, element);
+        if (element.comment) {
+          currentItemKey += `[comment=${element.comment}]`;
+        }
+        // Add relevant property values if they exist
+        if ((element as any).text) {
+          currentItemKey += `[text=${(element as any).text}]`;
+        }
+        if ((element as any).src) {
+          currentItemKey += `[src=${(element as any).src}]`;
+        }
         anyError.renderStack = [...stack, currentItemKey];
       }
       throw err;
@@ -222,8 +232,10 @@ export class ElementFactory implements IElementContext, IElementFactory
           }
           catch(err)
           {
-            this.logger.error(`Error interpreting script "${script}"`, err);
-            return String(err);
+            const availableVars = Object.keys(sandbox).join(', ');
+            const errorMsg = `Error evaluating template "${script}": ${err}\nAvailable variables: ${availableVars}`;
+            this.logger.error(errorMsg);
+            return `[ERROR: ${errorMsg}]`;
           }
         })
       };
@@ -262,42 +274,51 @@ export class ElementFactory implements IElementContext, IElementFactory
    */
   private inferElementType(element: ElementDeclaration) : ElementTypes {
     let elementType: ElementTypes | undefined = undefined;
-
+    
     if ((element as any).text !== undefined) {
       elementType = 'text';
     }
 
     if ((element as any).src !== undefined) {
       if (!!elementType) {
-        this.logger.error(`Inferred a node type of ${elementType} but also found a 'src' attribute`);
-        throw new Error(`Inferred a node type of ${elementType} but also found a 'src' attribute`);
+        const msg = `Inferred a node type of ${elementType} but also found a 'src' attribute. An element cannot be both types at once.`;
+        this.logger.error(msg);
+        throw new Error(msg);
       }
       elementType = 'image';
     }
 
     if ((element as any).children !== undefined) {
       if (!!elementType) {
-        this.logger.error(`Inferred a node type of ${elementType} but also found a 'children' attribute`);
-        throw new Error(`Inferred a node type of ${elementType} but also found a 'children' attribute`);
+        const msg = `Inferred a node type of ${elementType} but also found a 'children' attribute. An element cannot be both types at once.`;
+        this.logger.error(msg);
+        throw new Error(msg);
       }
       elementType = 'view';
     }
 
     if ((element as any).basis && (element as any).loop !== undefined) {
       if (!!elementType) {
-        this.logger.error(`Inferred a node type of ${elementType} but also found a 'basis' attribute`);
-        throw new Error(`Inferred a node type of ${elementType} but also found a 'basis' attribute`);
+        const msg = `Inferred a node type of ${elementType} but also found a 'basis' attribute. An element cannot be both types at once.`;
+        this.logger.error(msg);
+        throw new Error(msg);
       }
       elementType = 'list';
     }
 
     if (!elementType) {
-      this.logger.error(`No node type could be inferred`);
-      throw new Error(`No node type could be inferred`);
+      const availableProps = Object.keys(element).filter(k => k !== 'type' && k !== 'style' && k !== 'classes');
+      const elementDesc = element.comment ? ` (${element.comment})` : '';
+      const msg = `Could not infer element type${elementDesc}. Available properties: ${availableProps.join(', ')}. 
+        Expected one of:
+        - 'text' property for text elements
+        - 'src' property for images
+        - 'children' property for views/containers
+        - 'basis' and 'loop' properties for lists`;
+      this.logger.error(msg);
+      throw new Error(msg);
     }
     
     return elementType;
   }
 }
-
-

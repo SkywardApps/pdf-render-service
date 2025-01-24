@@ -35,4 +35,7 @@ export interface PdfRequest {
 
   // Use pre-rendering of content to allow for paragraph text measurement.
   prerender?: boolean;
+
+  // Google Fonts API key for font loading
+  googleApiKey?: string;
 }

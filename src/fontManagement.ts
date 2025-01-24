@@ -92,51 +92,109 @@ const mappedVariants: { [variant: string]: [string, string]} = {
  * @param apiKey A valid API key to access the API
  * @param logger An ILogger for errors
  */
-export async function loadReferencedFonts(fonts: string[], apiKey: string, logger: ILogger)
+export async function loadReferencedFonts(fontRequests: string[], apiKey: string, logger: ILogger)
 {
-  let googleFontResponse: IGoogleFontResponse | undefined = undefined;
-  for(const fontRequest of fonts)
+  try
   {
-    try
+    let googleFontResponse: IGoogleFontResponse | undefined = undefined;
+    for(const fontRequest of fontRequests)
     {
-      const knownFonts = listFonts();
-      const existingFont = knownFonts.find(ff => ff.family.toLowerCase() == fontRequest.toLowerCase());
-
-      if(existingFont)
+      try
       {
-        logger.debug(`Skipping ${fontRequest} as it is already loaded.`)
-        continue;
-      }
-      
-      // We only fetch the drectory once, as it contains all fonts and is rarely if ever updated.
-      if(!googleFontResponse)
-      {
-        logger.info(`Loading ${fontRequest} from the google repo.`);
-        const googleApiResponse = await axios.get<IGoogleFontResponse>('https://www.googleapis.com/webfonts/v1/webfonts?key='+apiKey);
-        googleFontResponse = googleApiResponse.data;
-      }
+        const knownFonts = listFonts();
+        const existingFont = knownFonts.find(ff => ff.family.toLowerCase() == fontRequest.toLowerCase());
 
-      const googleMatch = googleFontResponse.items.find(item => item.family.toLowerCase() == fontRequest.toLowerCase())
-      if(!googleMatch)
-      {
-        logger.error(`Requested a font by the name of ${fontRequest} but it was not loaded and we could not locate a match in the google API`);
-        throw new Error(`Requested a font by the name of ${fontRequest} but it was not loaded and we could not locate a match in the google API`);
-      }
+        if(existingFont)
+        {
+          logger.debug(`Skipping ${fontRequest} as it is already loaded.`)
+          continue;
+        }
+        
+        // We only fetch the drectory once, as it contains all fonts and is rarely if ever updated.
+        if(!googleFontResponse)
+        {
+          logger.info(`Loading ${fontRequest} from the google repo.`);
+          const googleApiResponse = await axios.get<IGoogleFontResponse>('https://www.googleapis.com/webfonts/v1/webfonts?key='+apiKey);
+          googleFontResponse = googleApiResponse.data;
+        }
 
-      // Go ahead and register the url provided.
-      registerFont(fontRequest, Object.keys(googleMatch.files).map(key => ({
-        src: googleMatch.files[key],
-        fontWeight: mappedVariants[key][0],
-        fontStyle: mappedVariants[key][1]
-      })));
+        const googleMatch = googleFontResponse.items.find(item => item.family.toLowerCase() == fontRequest.toLowerCase())
+        if(!googleMatch)
+        {
+          const allFonts = googleFontResponse.items;
+          throw new Error(`Requested a font by the name of ${fontRequest} but it was not loaded and we could not locate a match in the google API.
+Available similar fonts: ${findSimilarFonts(fontRequest, allFonts).map(f => f.family).join(', ')}`);
+        }
+
+        // Go ahead and register the url provided.
+        registerFont(fontRequest, Object.keys(googleMatch.files).map(key => ({
+          src: googleMatch.files[key],
+          fontWeight: mappedVariants[key][0],
+          fontStyle: mappedVariants[key][1]
+        })));
+      }
+      catch(err)
+      {
+        throw new Error(`Exception thrown attempting to load a font '${fontRequest}' from the Google API server.
+Check your API key (set via the GOOGLEAPIKEY environment variable).
+Error details: ${err}`);
+      }
     }
-    catch(err)
-    {
-      throw new Error(`Exception thrown attempting to load a font '${fontRequest}' from the Google API server.\nCheck your API key (set via the GOOGLEAPIKEY environment variable).\n${err}`);
-    }
+  }
+  catch(err)
+  {
+    throw new Error(`Exception thrown attempting to load fonts from the Google API server.
+Check your API key (set via the GOOGLEAPIKEY environment variable).
+Error details: ${err}`);
   }
 }
 
+// Helper function to find similar font names using Levenshtein distance
+function findSimilarFonts(requestedFont: string, availableFonts: IGoogleFontEntry[], maxDistance = 3): IGoogleFontEntry[] {
+  const similar: IGoogleFontEntry[] = [];
+  const requestedLower = requestedFont.toLowerCase();
+  
+  for (const font of availableFonts) {
+    const distance = levenshteinDistance(requestedLower, font.family.toLowerCase());
+    if (distance <= maxDistance) {
+      similar.push(font);
+    }
+  }
+  
+  return similar.sort((a, b) => 
+    levenshteinDistance(requestedLower, a.family.toLowerCase()) - 
+    levenshteinDistance(requestedLower, b.family.toLowerCase())
+  ).slice(0, 5); // Return top 5 matches
+}
+
+// Levenshtein distance calculation for finding similar strings
+function levenshteinDistance(a: string, b: string): number {
+  const matrix: number[][] = [];
+
+  for (let i = 0; i <= b.length; i++) {
+    matrix[i] = [i];
+  }
+
+  for (let j = 0; j <= a.length; j++) {
+    matrix[0][j] = j;
+  }
+
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
+    }
+  }
+
+  return matrix[b.length][a.length];
+}
 
 // Register our default font set
 registerFont(
