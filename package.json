@@ -30,9 +30,10 @@
   },
   "devDependencies": {
     "@types/fontkit": "^2.0.8",
-    "@types/node": "^18.17.0",
+    "@types/node": "^20.17.0",
     "@types/react": "^16.9.12",
     "@types/request": "^2.48.13",
+    "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^8.18.1",
     "@typescript-eslint/parser": "^8.18.1",
     "cross-env": "^10.1.0",
@@ -43,7 +44,7 @@
     "typescript": "^5.7.2"
   },
   "volta": {
-    "node": "18.17.0",
+    "node": "20.18.1",
     "yarn": "3.6.1"
   },
   "packageManager": "yarn@3.6.1"
