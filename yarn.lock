@@ -2274,7 +2274,7 @@ __metadata:
     ts-json-schema-generator: ^2.4.0
     ts-node-dev: ^2.0.0
     tslint: ^6.0.0
-    tslint-react: ^4.2.0
+    tslint-react: ^5.0.0
     typescript: ^4
     uuid: ^9.0.0
     vm2: ^3.10.0
@@ -2892,15 +2892,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslint-react@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "tslint-react@npm:4.2.0"
+"tslint-react@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "tslint-react@npm:5.0.0"
   dependencies:
-    tsutils: ^3.9.1
+    tsutils: ^3.17.1
   peerDependencies:
-    tslint: ^5.1.0
-    typescript: ">=2.8.0"
-  checksum: 9525b768233da391ad217b9d67aa0d7cd39c1e7b0e83f738cc7e599017ce2efcbb5cab99c5ee61f5f053fd1766624861594f416dad7b5b17c3801aa281578fe8
+    tslint: ^6.0.0
+    typescript: ">=3.4.1"
+  checksum: 9d0b4db6c90615c1f424d4466fe61e44807d8c9b0ecf267742e23a44938bfa353cb4f4940c408bd093fbc1dbb4e10e4902840c92864dfb2391280ffa64a0784c
   languageName: node
   linkType: hard
 
@@ -2940,7 +2940,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsutils@npm:^3.9.1":
+"tsutils@npm:^3.17.1":
   version: 3.21.0
   resolution: "tsutils@npm:3.21.0"
   dependencies:
