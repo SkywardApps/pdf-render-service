@@ -1,29 +1,17 @@
-# Dependabot configuration for automated dependency updates
+# Dependabot configuration - Security-focused updates
 # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
 version: 2
 updates:
-  # Enable version updates for npm
+  # Yarn package updates (security-focused)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    # Allow both direct and indirect dependencies
-    open-pull-requests-limit: 10
-    # Group minor and patch updates together
-    groups:
-      development-dependencies:
-        dependency-type: "development"
-        update-types:
-          - "minor"
-          - "patch"
-      production-dependencies:
-        dependency-type: "production"
-        update-types:
-          - "minor"
-          - "patch"
+    # Limit open PRs to reduce noise
+    open-pull-requests-limit: 3
     # Add labels to PRs
     labels:
       - "dependencies"
@@ -34,8 +22,12 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
+    # Ignore major version updates to prevent aggressive changes
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 
-  # Enable security updates for Docker
+  # Docker updates (pinned to Node 20.x)
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
@@ -49,12 +41,16 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
+    # Pin to Node 20.x - prevent jumping to Node 21, 22, etc.
+    ignore:
+      - dependency-name: "node"
+        update-types: ["version-update:semver-major"]
 
-  # Enable updates for GitHub Actions
+  # GitHub Actions updates
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
       day: "monday"
       time: "09:00"
     labels:
@@ -64,3 +60,7 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
+    # Limit major version updates for actions too
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
