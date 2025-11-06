@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "main": "index.js",
   "author": "Nicholas Elliott",
-  "license": "NONE",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "tsc": "tsc",

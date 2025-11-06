@@ -130,3 +130,6 @@ dist
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Memory bank (project documentation for AI context)
+memory-bank/
