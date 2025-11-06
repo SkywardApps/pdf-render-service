@@ -19,6 +19,8 @@ type ElementTypeRegistry = {
 // Future development may result in some kind of scoping for this registry, but for now we just have the singleton
 class ElementRegistry
 {
+    public readonly typeRegistry: ElementTypeRegistry = {};
+
     // Record the existance of an element type and the function we can use to generate it
     public register(typename:string, factory:ElementFactoryFunction)
     {
@@ -29,8 +31,6 @@ class ElementRegistry
     public create(typename:string, e:any, factory:IElementFactory, context:IElementContext, stack: string[], logger:ILogger) {
         this.typeRegistry[typename](e, factory, context, stack, logger);
     }
-
-    public readonly typeRegistry: ElementTypeRegistry = {};
 }
 
 // Here we explicitly register all elements we want to be available.

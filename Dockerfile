@@ -10,7 +10,7 @@ FROM node:20 as pdf_build
 WORKDIR /src
 COPY package.json .
 COPY yarn.lock .
-COPY tslint.json .
+COPY eslint.config.js .
 COPY tsconfig.json .
 COPY .yarnrc.yml .
 COPY .yarn ./.yarn

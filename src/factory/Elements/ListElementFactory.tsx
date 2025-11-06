@@ -3,7 +3,7 @@ import { IElementFactory } from '../IElementFactory';
 import { IElementContext } from '../IElementContext';
 import React from 'react';
 import { ILogger } from '../../ILogger';
-import { createElementKey } from "../createElementKey";
+import { createElementKey } from '../createElementKey';
 
 export const iteratedItemName = '$item';
 export const iteratedIndexName = '$index';
@@ -31,7 +31,7 @@ export const createListElement = async (element: ListElementDeclaration, factory
         // push a new scope with the iterated item as part of it, plus some supporting values
         context.pushData({[iteratedIndexName]:index, [iteratedItemName]:elementData, [iteratedParentName]:context.scope[iteratedItemName]});
         // Create the inner item for this element, using the above scope
-        let items = [];
+        const items = [];
         if (Array.isArray(loop)) {
             for(let idx = 0; idx < loop.length; ++idx)
             {

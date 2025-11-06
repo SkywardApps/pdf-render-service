@@ -19,7 +19,7 @@ export const createImageElement = async (element: ImageElementDeclaration, facto
 
     const isFixed = finalizeBoolean(element.fixed, context);
     const mustBreak = finalizeBoolean(element.break, context);
-    const canCache = finalizeBoolean(element.cache??"true", context);
+    const canCache = finalizeBoolean(element.cache??'true', context);
 
     return <Image key={v4()} src={finalSrc} style={finalStyle} debug={context.config.debug || debug} break={mustBreak} fixed={isFixed} cache={canCache}/>;
   };

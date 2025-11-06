@@ -9,7 +9,7 @@ import {
   PageSize,
   Orientation
 } from '@react-pdf/types';
-import { createElementKey } from "../createElementKey";
+import { createElementKey } from '../createElementKey';
 
 // Create a new page.  This must be at the top level, and are the only items allowed at the top level.
 export const createPageElement = async (element: PageElementDeclaration, factory:IElementFactory, context:IElementContext, stack: string[], logger:ILogger): Promise<React.ReactElement> => {

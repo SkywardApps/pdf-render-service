@@ -27,7 +27,7 @@ export const server = (request: IncomingMessage, res: ServerResponse, logger:ILo
     // data like a real status request
     if (request.method === 'GET' && request.url == '/') {
         res.writeHead(200, headers);
-        res.end("SUCCESS");
+        res.end('SUCCESS');
         return;
     }
 
@@ -57,7 +57,7 @@ export const server = (request: IncomingMessage, res: ServerResponse, logger:ILo
         return;
     }
 
-    logger.warn("Unexpected request", {method: request.method, url:request.url});
+    logger.warn('Unexpected request', {method: request.method, url:request.url});
 
     //  In any other case, reply with a 404 not found error
     res.writeHead(404, headers);

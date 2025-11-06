@@ -6,7 +6,7 @@ import React from 'react';
 import { ILogger } from '../../ILogger';
 import { v4 } from 'uuid';
 import { finalizeBoolean } from '../../helpers/FinalizeHelpers';
-import { createElementKey } from "../createElementKey";
+import { createElementKey } from '../createElementKey';
 
 // Create a simple text element
 export const createTextElement = async (element: TextElementDeclaration, factory:IElementFactory, context:IElementContext, stack: string[], logger:ILogger): Promise<React.ReactElement> => {
@@ -21,7 +21,7 @@ export const createTextElement = async (element: TextElementDeclaration, factory
 
   // We create a render function, rather than just a simple string, so that we can account for
   // dynamic functionality, such as including page numbers.
-  const renderFunction = context.finalizeStringDeferred(text ?? "");
+  const renderFunction = context.finalizeStringDeferred(text ?? '');
   logger.debug(`<Text> ${text}`);
   if(children?.length && text?.length)
   {

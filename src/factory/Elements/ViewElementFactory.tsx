@@ -6,7 +6,7 @@ import React from 'react';
 import { ILogger } from '../../ILogger';
 import { v4 } from 'uuid';
 import { finalizeBoolean } from '../../helpers/FinalizeHelpers';
-import { createElementKey } from "../createElementKey";
+import { createElementKey } from '../createElementKey';
 
 // Create the basic view container, which can use css style flex layout to position its children
 // tslint:disable-next-line: one-variable-per-declaration

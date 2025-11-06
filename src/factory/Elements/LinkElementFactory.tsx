@@ -19,8 +19,8 @@ export const createLinkElement = async (element: LinkElementDeclaration, factory
   const mustBreak = finalizeBoolean(element.break, context);
   const canWrap = finalizeBoolean(element.wrap ?? 'true', context);
   const isFixed = finalizeBoolean(element.fixed, context);
-  const finalText = context.finalizeString(text ?? "");
-  const finalHref = context.finalizeString(href ?? "");
+  const finalText = context.finalizeString(text ?? '');
+  const finalHref = context.finalizeString(href ?? '');
 
   // We create a render function, rather than just a simple string, so that we can account for
   // dynamic functionality, such as including page numbers.
@@ -35,7 +35,7 @@ export const createLinkElement = async (element: LinkElementDeclaration, factory
   }
 
   const key = createElementKey('link', element);
-  const renderedChildren = text?.length ? [<Text>{finalText}</Text>] : await Promise.all(children!.map(async (child, idx) => {
+  const renderedChildren = text?.length ? [<Text key={key}>{finalText}</Text>] : await Promise.all(children!.map(async (child, idx) => {
     return await factory.createElement(child, [...stack, key+`.child[${idx}]`]);
   }));
 

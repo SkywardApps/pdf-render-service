@@ -16,6 +16,10 @@ export class ElementFactory implements IElementContext, IElementFactory
 {
   public readonly config:PdfRequest;
 
+  // Because we have some basic logic constructs, we push extra local variables onto
+  // a stack for inline templating to access
+  private localDataStacks:any[] = [];
+
   public constructor(config: PdfRequest, private logger: ILogger, private googleApiKey: string)
   {
     // apply defaults
@@ -43,10 +47,6 @@ export class ElementFactory implements IElementContext, IElementFactory
   {
     return fontIsRegistered(fontFamily);
   }
-
-  // Because we have some basic logic constructs, we push extra local variables onto
-  // a stack for inline templating to access
-  private localDataStacks:any[] = [];
 
   // Add a new scope onto the stack
   pushData(localData: any): void
@@ -153,7 +153,7 @@ export class ElementFactory implements IElementContext, IElementFactory
       const anyError = err as any;
       if(!anyError.renderStack)
       {
-        let currentItemKey = createElementKey(elementType, element);
+        const currentItemKey = createElementKey(elementType, element);
         anyError.renderStack = [...stack, currentItemKey];
       }
       throw err;

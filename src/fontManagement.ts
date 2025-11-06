@@ -56,7 +56,7 @@ interface IGoogleFontEntry {
 }
 
 export interface IGoogleFontResponse {
-  kind: "webfonts#webfontList",
+  kind: 'webfonts#webfontList',
   items: IGoogleFontEntry[];
 }
 
@@ -64,26 +64,26 @@ export interface IGoogleFontResponse {
  * Map the google method of describing style variants to ReactPDF's
  */
 const mappedVariants: { [variant: string]: [string, string]} = {
-  "100": ["thin", "normal"],
-  "200": ["ultralight", "normal"],
-  "300": ["light", "normal"],
-  "400": ["normal", "normal"],
-  "regular": ["normal", "normal"],
-  "500": ["medium", "normal"],
-  "600": ["semibold", "normal"],
-  "700": ["bold", "normal"],
-  "800": ["ultrabold", "normal"],
-  "900": ["heavy", "normal"],
-  "100italic": ["thin", "italic"],
-  "200italic": ["ultralight", "italic"],
-  "300italic": ["light", "italic"],
-  "400italic": ["normal", "italic"],
-  "italic": ["normal", "italic"],
-  "500italic": ["medium", "italic"],
-  "600italic": ["semibold", "italic"],
-  "700italic": ["bold", "italic"],
-  "800italic": ["ultrabold", "italic"],
-  "900italic": ["heavy", "italic"],
+  '100': ['thin', 'normal'],
+  '200': ['ultralight', 'normal'],
+  '300': ['light', 'normal'],
+  '400': ['normal', 'normal'],
+  'regular': ['normal', 'normal'],
+  '500': ['medium', 'normal'],
+  '600': ['semibold', 'normal'],
+  '700': ['bold', 'normal'],
+  '800': ['ultrabold', 'normal'],
+  '900': ['heavy', 'normal'],
+  '100italic': ['thin', 'italic'],
+  '200italic': ['ultralight', 'italic'],
+  '300italic': ['light', 'italic'],
+  '400italic': ['normal', 'italic'],
+  'italic': ['normal', 'italic'],
+  '500italic': ['medium', 'italic'],
+  '600italic': ['semibold', 'italic'],
+  '700italic': ['bold', 'italic'],
+  '800italic': ['ultrabold', 'italic'],
+  '900italic': ['heavy', 'italic'],
 };
 
 /**

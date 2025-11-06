@@ -50,7 +50,7 @@ export interface Style {
   textAlign?: 'left' | 'right' | 'center' | 'justify', //?
   textDecoration?: 'line-through' | 'underline' | 'none',
   textDecorationColor?: string,
-  textDecorationStyle?: "dashed" | "dotted" | "solid" | string, //?
+  textDecorationStyle?: 'dashed' | 'dotted' | 'solid' | string, //?
   textIndent?: any, //?
   textOverflow?: any, //?
   textTransform?: 'capitalize' | 'lowercase' | 'uppercase',
@@ -91,22 +91,22 @@ export interface Style {
   border?: number | string,
   borderWidth?: number,
   borderColor?: string,
-  borderStyle?: "dashed" | "dotted" | "solid",
+  borderStyle?: 'dashed' | 'dotted' | 'solid',
   borderTop?: number | string,
   borderTopColor?: string,
-  borderTopStyle?: "dashed" | "dotted" | "solid", // ?
+  borderTopStyle?: 'dashed' | 'dotted' | 'solid', // ?
   borderTopWidth?: number | string,
   borderRight?: number | string,
   borderRightColor?: string,
-  borderRightStyle?: "dashed" | "dotted" | "solid", //?
+  borderRightStyle?: 'dashed' | 'dotted' | 'solid', //?
   borderRightWidth?: number | string,
   borderBottom?: number | string,
   borderBottomColor?: string,
-  borderBottomStyle?: "dashed" | "dotted" | "solid", //?
+  borderBottomStyle?: 'dashed' | 'dotted' | 'solid', //?
   borderBottomWidth?: number | string,
   borderLeft?: number | string,
   borderLeftColor?: string,
-  borderLeftStyle?: "dashed" | "dotted" | "solid", //?
+  borderLeftStyle?: 'dashed' | 'dotted' | 'solid', //?
   borderLeftWidth?: number | string,
   borderTopLeftRadius?: number | string,
   borderTopRightRadius?: number | string,

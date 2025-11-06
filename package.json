@@ -12,7 +12,9 @@
     "debug": "cross-env TZ=UTC NODE_ENV=development tsnd --inspect --respawn src/index.ts",
     "release": "tsc && node ./dist/index.js",
     "update-types": "npx ts-json-schema-generator -f tsconfig.json -i PdfRequest --path ./src/wire/PdfRequest.ts --type PdfRequest -o ./src/resources/PdfRequest.json",
-    "profile": "tsc && node --prof ./dist/index.js"
+    "profile": "tsc && node --prof ./dist/index.js",
+    "lint": "eslint 'src/**/*.{ts,tsx}'",
+    "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix"
   },
   "dependencies": {
     "@react-pdf/renderer": "^3.0.0",
@@ -28,16 +30,18 @@
   },
   "devDependencies": {
     "@types/fontkit": "^1.8.0",
-    "@types/node": "^12.12.11",
+    "@types/node": "^18.17.0",
     "@types/react": "^16.9.12",
     "@types/request": "^2.48.13",
     "@types/uuid": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.1",
+    "@typescript-eslint/parser": "^8.18.1",
     "cross-env": "^10.1.0",
-    "ts-json-schema-generator": "^2.4.0",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react": "^7.37.2",
+    "ts-json-schema-generator": "^2.3.0",
     "ts-node-dev": "^2.0.0",
-    "tslint": "^6.0.0",
-    "tslint-react": "^4.2.0",
-    "typescript": "^4"
+    "typescript": "^5.7.2"
   },
   "volta": {
     "node": "18.17.0",
