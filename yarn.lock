@@ -525,21 +525,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prop-types@npm:*":
-  version: 15.7.5
-  resolution: "@types/prop-types@npm:15.7.5"
-  checksum: 5b43b8b15415e1f298243165f1d44390403bb2bd42e662bca3b5b5633fdd39c938e91b7fce3a9483699db0f7a715d08cef220c121f723a634972fdf596aec980
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:^16.9.12":
-  version: 16.14.26
-  resolution: "@types/react@npm:16.14.26"
+"@types/react@npm:^19.2.2":
+  version: 19.2.2
+  resolution: "@types/react@npm:19.2.2"
   dependencies:
-    "@types/prop-types": "*"
-    "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: ff15ff5b9d06eb04155dd7fc86c005e6605ca3181edea98c0a0d00c8fe918bdd22c3329dd12bea4b7f33094a8491bc7182f5d407f4852f66323846c2b080e5f9
+  checksum: 7eb2d316dd5a6c02acb416524b50bae932c38d055d26e0f561ca23c009c686d16a2b22fcbb941eecbe2ecb167f119e29b9d0142d9d056dd381352c43413b60da
   languageName: node
   linkType: hard
 
@@ -552,13 +543,6 @@ __metadata:
     "@types/tough-cookie": "*"
     form-data: ^2.5.5
   checksum: d94d9baad0e192da36d39f5617214ad705f5a00e19ef57244479074f2354f8f759c44b8dc3efba1e9fbc3e6a0ddaf8366abdfaa81dad324c4a9686b8e6d98981
-  languageName: node
-  linkType: hard
-
-"@types/scheduler@npm:*":
-  version: 0.16.2
-  resolution: "@types/scheduler@npm:0.16.2"
-  checksum: b6b4dcfeae6deba2e06a70941860fb1435730576d3689225a421280b7742318d1548b3d22c1f66ab68e414f346a9542f29240bc955b6332c5b11e561077583bc
   languageName: node
   linkType: hard
 
@@ -3649,7 +3633,7 @@ __metadata:
     "@react-pdf/renderer": ^3.0.0
     "@types/fontkit": ^2.0.8
     "@types/node": ^20.17.0
-    "@types/react": ^16.9.12
+    "@types/react": ^19.2.2
     "@types/request": ^2.48.13
     "@types/uuid": ^9.0.0
     "@typescript-eslint/eslint-plugin": ^8.18.1
@@ -3662,7 +3646,7 @@ __metadata:
     eslint-plugin-react: ^7.37.2
     fontkit: 2
     fonts: ^0.0.2
-    react: ^16.12.0
+    react: ^19.2.0
     ts-json-schema-generator: ^2.3.0
     ts-node-dev: ^2.0.0
     typescript: ^5.7.2
@@ -3772,14 +3756,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^16.12.0":
-  version: 16.14.0
-  resolution: "react@npm:16.14.0"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-    prop-types: ^15.6.2
-  checksum: 8484f3ecb13414526f2a7412190575fc134da785c02695eb92bb6028c930bfe1c238d7be2a125088fec663cc7cda0a3623373c46807cf2c281f49c34b79881ac
+"react@npm:^19.2.0":
+  version: 19.2.0
+  resolution: "react@npm:19.2.0"
+  checksum: 33dd01bf699e1c5040eb249e0f552519adf7ee90b98c49d702a50bf23af6852ea46023a5f7f93966ab10acd7a45428fa0f193c686ecdaa7a75a03886e53ec3fe
   languageName: node
   linkType: hard
 
