@@ -389,15 +389,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/request@npm:^2.48.3":
-  version: 2.48.8
-  resolution: "@types/request@npm:2.48.8"
+"@types/request@npm:^2.48.13":
+  version: 2.48.13
+  resolution: "@types/request@npm:2.48.13"
   dependencies:
     "@types/caseless": "*"
     "@types/node": "*"
     "@types/tough-cookie": "*"
-    form-data: ^2.5.0
-  checksum: 0b7754941e08205dce51635d894ec524df276d2b83ca13b9aab723f9281acecf1108841e9554494cb1cb60f6d6ddbb47ebea97392bcf2bf607f035b3a9b4af45
+    form-data: ^2.5.5
+  checksum: d94d9baad0e192da36d39f5617214ad705f5a00e19ef57244479074f2354f8f759c44b8dc3efba1e9fbc3e6a0ddaf8366abdfaa81dad324c4a9686b8e6d98981
   languageName: node
   linkType: hard
 
@@ -1214,7 +1214,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:^2.5.0":
+"form-data@npm:^2.5.5":
   version: 2.5.5
   resolution: "form-data@npm:2.5.5"
   dependencies:
@@ -2113,7 +2113,7 @@ __metadata:
     "@types/fontkit": ^1.8.0
     "@types/node": ^12.12.11
     "@types/react": ^16.9.12
-    "@types/request": ^2.48.3
+    "@types/request": ^2.48.13
     "@types/uuid": ^3.4.6
     ajv: ^8.11.0
     axios: ^0.30.2
