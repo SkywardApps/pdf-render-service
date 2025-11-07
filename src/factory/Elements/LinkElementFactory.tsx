@@ -30,8 +30,18 @@ export const createLinkElement = async (element: LinkElementDeclaration, factory
     logger.error('Text element provided with both a text property and a children property. Text will be discarded.');
   }
 
-  if (finalStyle.fontFamily && !context.fontIsRegistered(finalStyle.fontFamily)) {
-    await context.loadReferencedFonts(finalStyle.fontFamily);
+  if (finalStyle.fontFamily)
+  { 
+    if(typeof(finalStyle.fontFamily) === 'string' && !context.fontIsRegistered(finalStyle.fontFamily)) {
+      await context.loadReferencedFonts(finalStyle.fontFamily);
+    }
+    else if(Array.isArray(finalStyle.fontFamily)) {
+      for(const fontFamily of finalStyle.fontFamily) {
+        if(!context.fontIsRegistered(fontFamily)) {
+          await context.loadReferencedFonts(fontFamily);
+        }
+      }
+    }
   }
 
   const key = createElementKey('link', element);
