@@ -28,9 +28,9 @@ export const createTextElement = async (element: TextElementDeclaration, factory
     logger.error('Text element provided with both a text property and a children property. Text will be discarded.');
   }
 
-  if(finalStyle.fontFamily && !context.fontIsRegistered(finalStyle.fontFamily))
+  if(finalStyle.fontFamily)
   {
-    await context.loadReferencedFonts(finalStyle.fontFamily)
+    context.loadUnregisteredFonts(finalStyle.fontFamily);
   }
 
   if(children?.length)

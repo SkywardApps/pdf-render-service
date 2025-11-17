@@ -37,4 +37,7 @@ export interface IElementContext
   
   // Should the engine pre-render text so it can be measured.
   shouldPrerender(): unknown;
+
+  // Load any unregistered fonts in the given list
+  loadUnregisteredFonts(fontFamily: string | string[]): Promise<void>;
 }
