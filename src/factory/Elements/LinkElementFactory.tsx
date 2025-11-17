@@ -32,16 +32,7 @@ export const createLinkElement = async (element: LinkElementDeclaration, factory
 
   if (finalStyle.fontFamily)
   { 
-    if(typeof(finalStyle.fontFamily) === 'string' && !context.fontIsRegistered(finalStyle.fontFamily)) {
-      await context.loadReferencedFonts(finalStyle.fontFamily);
-    }
-    else if(Array.isArray(finalStyle.fontFamily)) {
-      for(const fontFamily of finalStyle.fontFamily) {
-        if(!context.fontIsRegistered(fontFamily)) {
-          await context.loadReferencedFonts(fontFamily);
-        }
-      }
-    }
+    await context.loadUnregisteredFonts(finalStyle.fontFamily);
   }
 
   const key = createElementKey('link', element);
