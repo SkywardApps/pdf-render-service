@@ -2,18 +2,23 @@ import { Font } from '@react-pdf/renderer';
 import axios from 'axios';
 import { ILogger } from './ILogger';
 
+
+// Font types recreated here as they don't seem to be exposed by the react-pdf font module
+export type FontStyle = 'normal' | 'italic' | 'oblique';
+export type FontWeight = number | 'thin' | 'ultralight' | 'light' | 'normal' | 'medium' | 'semibold' | 'bold' | 'ultrabold' | 'heavy';
+
 /**
  * An internal map of all the fonts we have already loaded, since there doesn't seem to be a system for it as part of react-pdf
  */
 const registeredFonts: {
-  [family: string]: { src: string; fontWeight: string; fontStyle: string; }[];
+  [family: string]: { src: string; fontWeight: FontWeight; fontStyle: FontStyle; }[];
 } = {};
 
 
 /**
  * Register custom fonts.  Provide a family at a time, along with all valid style configurations
  */
-export function registerFont(family: string, fonts: { src: string; fontWeight?: string; fontStyle?: string; }[]) {
+export function registerFont(family: string, fonts: { src: string; fontWeight?: FontWeight; fontStyle?: FontStyle; }[]) {
   Font.register({
     family,
     fonts
@@ -63,7 +68,7 @@ export interface IGoogleFontResponse {
 /**
  * Map the google method of describing style variants to ReactPDF's
  */
-const mappedVariants: { [variant: string]: [string, string]} = {
+const mappedVariants: { [variant: string]: [FontWeight, FontStyle]} = {
   '100': ['thin', 'normal'],
   '200': ['ultralight', 'normal'],
   '300': ['light', 'normal'],

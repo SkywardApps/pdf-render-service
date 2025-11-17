@@ -20,9 +20,9 @@ export const createViewElement = async (element: ViewElementDeclaration, factory
 
   // Calculate the final style to apply considering any class names included
   const finalStyle = context.buildFinalStyle(classes ?? [], style ?? {});
-  if(finalStyle.fontFamily && !context.fontIsRegistered(finalStyle.fontFamily))
+  if(finalStyle.fontFamily)
   {
-    await context.loadReferencedFonts(finalStyle.fontFamily)
+    context.loadUnregisteredFonts(finalStyle.fontFamily);
   }
 
   logger.debug('<View>');

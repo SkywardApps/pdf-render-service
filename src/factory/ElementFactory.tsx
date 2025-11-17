@@ -48,6 +48,22 @@ export class ElementFactory implements IElementContext, IElementFactory
     return fontIsRegistered(fontFamily);
   }
 
+  
+  // Load any unregistered fonts in the given list
+  async loadUnregisteredFonts(fontFamily: string | string[]): Promise<void>
+  {
+    if(typeof(fontFamily) === 'string' && !this.fontIsRegistered(fontFamily)) {
+      await this.loadReferencedFonts(fontFamily);
+    }
+    else if(Array.isArray(fontFamily)) {
+      for(const font of fontFamily) {
+        if(!this.fontIsRegistered(font)) {
+          await this.loadReferencedFonts(font);
+        }
+      }
+    }
+  }
+  
   // Add a new scope onto the stack
   pushData(localData: any): void
   {
