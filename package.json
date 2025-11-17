@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@types/fontkit": "^2.0.8",
-    "@types/node": "^20.17.0",
+    "@types/node": "^20.19.25",
     "@types/react": "^16.9.12",
     "@types/request": "^2.48.13",
     "@types/uuid": "^9.0.0",

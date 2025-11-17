@@ -582,12 +582,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.17.0":
-  version: 20.19.24
-  resolution: "@types/node@npm:20.19.24"
+"@types/node@npm:^20.19.25":
+  version: 20.19.25
+  resolution: "@types/node@npm:20.19.25"
   dependencies:
     undici-types: ~6.21.0
-  checksum: d532a28d454dfadc7b3af7f39d087f7d9416d2e0cdd4b47c3e00fc303177280a66bd15a86078a9957260a47b1d2bad5ac35096aeb316e56bc0318c904f214cc3
+  checksum: f6d854995d173e9d85c7ffd4ca69ee645daac8c0a150fc3ed2f7b21dfc7ece34e44063213c4e9b11de56fe7de807d59c1bb717fca8af8590b40bfb9d9068e629
   languageName: node
   linkType: hard
 
@@ -3749,7 +3749,7 @@ __metadata:
   dependencies:
     "@react-pdf/renderer": ^3.4.5
     "@types/fontkit": ^2.0.8
-    "@types/node": ^20.17.0
+    "@types/node": ^20.19.25
     "@types/react": ^16.9.12
     "@types/request": ^2.48.13
     "@types/uuid": ^9.0.0
