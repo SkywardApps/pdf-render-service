@@ -19,9 +19,9 @@ export const createPageElement = async (element: PageElementDeclaration, factory
     // Build the style to apply to the page.  Not all attributes make sense here (mainly, eg, margin)
     const finalStyle = context.buildFinalStyle(classes ?? [], style ?? {});
 
-    if(finalStyle.fontFamily && !context.fontIsRegistered(finalStyle.fontFamily))
+    if(finalStyle.fontFamily)
     {
-      await context.loadReferencedFonts(finalStyle.fontFamily)
+      context.loadUnregisteredFonts(finalStyle.fontFamily);
     }
 
     const size = context.finalizeString(element.size ?? context.config.size ?? 'LETTER') as PageSize;
