@@ -29,7 +29,7 @@
     "react": "^16.12.0",
     "uuid": "^9.0.0",
     "vm2": "^3.10.0",
-    "winston": "^3.18.3"
+    "winston": "^3.19.0"
   },
   "devDependencies": {
     "@types/fontkit": "^2.0.8",
