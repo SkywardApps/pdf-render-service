@@ -1,0 +1,23 @@
+services:
+  test:
+    image: node:20.19.5
+    working_dir: /src
+    environment:
+      - CI=1
+    volumes:
+      - .:/src
+      - test_node_modules:/src/node_modules
+    command: ["sh", "-c", "yarn --immutable && yarn test:watch"]
+
+  test-once:
+    image: node:20.19.5
+    working_dir: /src
+    environment:
+      - CI=1
+    volumes:
+      - .:/src
+      - test_node_modules:/src/node_modules
+    command: ["sh", "-c", "yarn --immutable && yarn test:coverage"]
+
+volumes:
+  test_node_modules:
