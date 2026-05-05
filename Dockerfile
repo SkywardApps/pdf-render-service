@@ -5,7 +5,7 @@ FROM pdf_base AS pdf_debug
 # So do nothing app related as the files won't
 # be present yet.
 
-FROM node:20.19.5 AS pdf_compile
+FROM node:20.20.2 AS pdf_compile
 
 WORKDIR /src
 COPY package.json .
@@ -37,7 +37,7 @@ FROM pdf_compile AS pdf_build
 
 RUN npx node-prune
 
-FROM node:20.19.5 AS pdf_release
+FROM node:20.20.2 AS pdf_release
 
 # Run everything after as non-privileged user.
 RUN install -m 775 -d /usr/src/app
