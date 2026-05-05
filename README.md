@@ -1,330 +1,75 @@
-# PDF Render engine and service
-This project provides a PDF layout and rendering engine, along with a web service 
-to render the PDF on-demand.
+# PDF Render Engine and Service
 
-### Why this?
-Creating a PDF is hard.  You can use many great editors, but ONLY for fixed content.  If you have dynamic context,
-like a changing product list of variable length, or different titles and names, there's no great solution.  The
-goal of this service is to create something that is:
+A PDF layout and rendering engine — and an HTTP service around it — that turns a JSON request into a PDF binary. Built on [react-pdf](https://react-pdf.org/) and the [Yoga](https://yogalayout.com/) layout engine.
 
-* Data Driven for both content and structure
-* Easy to modify on the fly
-* Uses common layout standards
-* Usable as a service
-
-### Okay, but why not wkhtmltopdf or one of the other render-a-website-as-pdf services?
-The killer feature here is being able to have repeatable entry and exit sections on a 
-variable sized list.  If you have a table with a header row, for example, and the table flows onto the next page, 
-ideally you want: The page header (if any) to be included, possibly with a dynamic page number, then the header
-row to be repeated, and then keep going with the content.  None of the existing services actually support that 
-full requirement.
-
-Plus, they all tend to be very finicky.  This service may be finicky too, but in a way we can debug and fix it, versus 
-relying on how a headless browser on a server somewhere is responding with the latest chromium updates.
-
-### Cool, but, Data Driven? That doesn't sound like fun to work with
-Working directly with the data for the structure isn't hugely hard, but large PDFs become difficult.
-The _end_ goal for all of this is to create a graphical template editor, which you can only do if your PDF is 
-driven by data.   Otherwise, you're always dependent on a developer working on your (graphical) content.
-
-This also separates the data aspect (which can be fed from an API, for example) from the visual structure, which 
-can allow division of responsibilities.
-
-https://react-pdf.org/
-https://yogalayout.com/
-https://craft.js.org/
-https://en.wikipedia.org/wiki/PDF
-
-## Features
-
-### Layout
-
-This service is based on react-pdf, which in turn uses the Yoga layout engine.  
-This means that layout is largely based on flexbox with a minimal CSS syntax.
-The hope is that this means a lot of layout knowledge can transfer from web design
-experience.
-
-### Styling
-
-#### Inline Styles
-
-This service supports a subset of CSS properties ( See https://react-pdf.org/styling#valid-css-properties ) 
-that can be assigned directly to an element. This includes basic layout and visual styles.
-
-```json
-    {
-        "type":"text",
-        "text":"Hello World",
-        "style":{
-            "fontSize":18,
-            "color":"#000000",
-            "margin":5,
-            "position":"absolute",
-            "top":0,
-            "left":0
-        }
-    }
+```bash
+yarn && yarn start
+curl -X POST http://localhost:9000/ \
+  -H "Content-Type: application/json" \
+  -o hello.pdf \
+  -d '{"title":"Hello","pages":[{"children":[{"text":"Hello, World!"}]}]}'
 ```
 
-### Classes
-Similar to css, you can create named styles that you can apply as classes to individual elements.
-Unlike css, the application of properties is dependent on the order of the classname in the list.
-This means that classes are applied in list order, with subsequent classes overwriting properties
-of earlier ones, and finally any explicit element style is applied.
+See [docs/getting-started.md](docs/getting-started.md) for the full quickstart.
 
-```json
-{
-    "styles": {
-        "zeroPad": {
-            "margin": 0,
-            "padding": 0
-        },
-        "smallPad": {
-            "padding": 2
-        },
-        "guideTitle": {
-            "fontSize": 24,
-            "fontWeight": "bold",
-            "textAlign": "center",
-            "color": "#F7A03A"
-        }
-    },
-    ...
-    "pages":[
-        ...
-            {
-                "type":"text",
-                "classes":["zeroPad", "smallPad", "guideTitle"], // padding set to 2 as smallPad overwrites zeroPad's prop,
-                "style":{
-                    "color":"#000000" // color is black as this overwrites the guideTitle prop
-                }
-            }
-        ...
-    ]
-}
+## Why this?
+
+Creating a PDF is hard. Editors handle fixed content well, but anything dynamic — a variable-length product list, changing titles and names — quickly runs out of road. This service aims to be:
+
+- **Data-driven** for both content and structure.
+- **Easy to modify on the fly** — no recompilation, no template language to learn beyond JSON + a templating syntax.
+- **Standards-based layout** — flexbox via Yoga.
+- **Service-shaped** — POST a JSON body, get a PDF binary back.
+
+## Why not wkhtmltopdf or another HTML-to-PDF service?
+
+The killer feature here is **re-entrant headers and footers on variable-length content**. If you have a table whose header row should repeat at the top of every page the table spans, none of the headless-browser converters handle that cleanly. They're also fragile under upstream Chromium updates — when something breaks, you're at the mercy of a third party. This service owns the rendering path so it can be debugged and fixed in-house.
+
+## Why JSON / data-driven?
+
+The end goal is a graphical template editor. That only works if the layout is data, not code — otherwise a developer is always in the loop for visual changes. Keeping data and structure separable also lets a backend produce the data while a designer owns the structure, with neither blocking the other.
+
+## Documentation
+
+Human-targeted docs live in [docs/](docs/):
+
+- **[Getting started](docs/getting-started.md)** — install, run, first PDF.
+- **[HTTP API](docs/api.md)** — endpoints, request envelope, errors, limits.
+- **[Element reference](docs/elements.md)** — every element type and property (page, view, text, image, link, list, shadow).
+- **[Templating](docs/templating.md)** — `{{...}}` syntax, scope rules, sandbox limits.
+- **[Styling](docs/styling.md)** — class precedence, supported CSS, common patterns.
+- **[Fonts](docs/fonts.md)** — bundled defaults, on-demand Google Fonts loading.
+- **[Deployment](docs/deployment.md)** — Docker, environment variables, security notes.
+
+The `memory-bank/` directory contains a terser, LLM-targeted snapshot of the same material; humans will get more out of `docs/`.
+
+## Project layout
+
+```
+src/
+  index.ts                 entrypoint (winston + http listener)
+  Server.ts                routing (GET /, GET /fonts, OPTIONS, POST /)
+  PdfController.ts         POST handler — buffer body, validate, render, stream PDF back
+  validatePdfRequest.ts    AJV against src/resources/PdfRequest.json
+  fontManagement.ts        registry + Google Fonts loader
+  wire/                    PdfRequest + ElementDeclaration types (schema source of truth)
+  factory/                 ElementFactory + per-type Elements/
+  helpers/                 small utilities
+fonts/                     bundled font files (Roboto, Teko, Noto Sans)
+docs/                      human-targeted documentation
+memory-bank/               LLM-targeted project snapshot
 ```
 
-### Dynamic Data and Templating
+## License
 
-You can provide an arbitrary data model as the 'data' property, and your structure is able to access it in 
-any property.  In fact, your structure can access the entire data structure!
+MIT — see [LICENSE](LICENSE).
 
-In order to reference data inline, you can use a `{{variablename}}` syntax.  So for example, if you provided 
-a data structure:
-```json
-{
-    "title":"Hello World"
-}
-```
+## Contributing
 
-Then you could reference that anywhere in your structure like so:
-```json
-{
-    "text": "Title: {{data.title}}",
-    ...
-}
-```
+See [Contributing.md](Contributing.md) and the [Code of Conduct](CODE_OF_CONDUCT.md). Issues and pull requests are tracked on GitHub.
 
-You can use it in image src properties:
-```json
-{
-    "src": "https://images.com/{{data.imageUrl}}",
-    ...
-}
-```
+## Reference links
 
-Or in styles:
-```json
-"style":{
-    "marginLeft":"{{data.standardMargin}}",
-    ...
-}
-```
-
-In fact, the code between `{` `}` can be any arbitrary javascript!
-```json
-{
-    "text":"{{[1,2,3,4].filter(i => i > 2).map(i => 'Index:' + (i+1))}}"
-}
-```
-
-> Executing javascript (beyond simple derefences like `data.value`) can be _very_ expensive
-and cause the PDF generation to be _very_ slow.
-
-### Logical layouts 
-
-You can use logical elements to affect changes on the structure based on the data.  Currently we have only 
-implemented 'list', but 'if' is the next candidate. 
-
-Basically, this means that you can use a list to iterate and apply a specific template over an array of elements in
-your data.
-
-For example, if you have:
-```json
-{
-    "data":{
-        "items":[
-            "One",
-            "Two",
-            "Three"
-        ]
-    }
-}
-```
-You can loop over that array with a list, referencing each data element with the locally-scoped '$item' variable:
-
-```json
-{
-    "type":"list",
-    "basis":"data.items",
-    "loop":{
-        "type":"text",
-        "text":"Item {{$item}}"
-    }
-}
-```
-
-### Re-entrant page breaks
-You can designate any item 'fixed' to it's place on a page by setting 'fixed':true on it.  This means on each 
-page break, this item will be re-rendered to its location.
-https://react-pdf.org/advanced#fixed-components
-
-You can also specify that items cannot be subdivided across page breaks by setting 'wrap':false.  This means if
-the item won't fit on the page, it will be moved to a new page instead.
-https://react-pdf.org/advanced#page-wrapping
-
-A feature specific to our engine are 're-entrant blocks'.  This means that when you create an element, you can 
-define a header and footer that are only scoped to that item (as opposed to the page in general).  This means 
-that if you have, for example, a grid of contents with a header row, that header can be repeated on any page
-break.
-
-```json
-{
-    "type":"list",
-    "basis":"data.items",
-    "loop":{
-        "type":"text",
-        "text":"[{{$item.Name}}] [{{$item.Cost}}]"
-    },
-    "header":{
-        "type":"text",
-        "text":"[Item Name] [Cost($)]",
-    },
-    "footer":{
-        "type":"image",
-        "src":"https://footers.org/prettypicture.jpg"
-    }
-}
-```
-
-## Usage
-
-### Invoking the service
-
-This isn't designed to be complicated; it supports three operations:
-
-* GET: Return a basic status of readiness.
-* OPTIONS: Supports making CORS calls from other domains
-* POST: Submit a json payload representing the PDF to be rendered.  The result is a direct PDF 
-binary download, or an HTTP error code with details in the body.
-
-### Pages (Container)
-
-Pages are top-level elements, and are the only elements that can exist at the top level.  
-They accept basic styling, and have a `children` property for the page's structure.
-
-### Views (Container)
-
-Views are the basic containers that hold content.  Views can contain other containers, or content elements.
-They can accept full styling, and have a `children` property for child content.
-Typically, you'd either make a container view `'display':'flex'` and designate how it lays out the children,
-or `'positioning':'relative'` and then each child lays itself out with `'positioning':'absolute` and the 
-`top` `left` `right` and `bottom` properties. 
-
-### Text
-
-Render some basic text on the screen via the `text` property. 
-
-Accepts full styling. 
-
-~~Cannot contain children.~~
-Can contain children, but they can _only_ be other Text elements.  This allows for inline spans with changing formatting; Ie a parent text element with one regular text part, one **bolded** text part, and a final regular text part, that all flows and is laid out as one text line.
-
-### Images
-
-Render an image on the screen from the `src` property. This can be a url to an accessible image online,
-or a data-url for image content inline (or sourced from the data property via templating).
-https://css-tricks.com/data-uris/
-
-Accepts full styling. 
-
-Cannot contain children.
-
-### Lists (Container)
-
-Lists are logical elements, that don't independently affect styling or positioning.  There is no element
-added to the rendered document that strictly represents a list.  This means it does NOT have a style 
-property.
-
-You must specify a `basis` property and provide the reference to an array of items in your data payload,
-although technically you can insert javascript here that simply _results_ in an array.  You must then
-provide a `loop` property which defines a single child element (as an object) or an array of child elements that will be rendered for each item in the
-basis array.
-
-Optionally, you can provide `header` and `footer`, each of which is a simple element that is placed _before_
-or _after_ the list , respectively, _on each page in which the list was rendered_.
-
-Cannot contain children, other than the individual items in `loop` `header` or `footer`.
-
-## Type inference
-
-In simple cases you can elide the `type` property by providing one of the discriminator properties.  That is, one of:
-
-* `text`: Infer a text type.
-* `src`: Infer an image type.
-* `children`: infer a view type.
-* `basis` and `loop`: infer a list type.
-
-In more complex cases (a text with children, for example) you will need to explicitly provide the `type`.
-
-## Examples
-
-```json
-{
-    "text": "Hello World!",
-    "comment": "You can add a comment for readability.  This element will be auto-detected as text due to the text property"
-}
-```
-
-```json
-{
-    "src": "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v9/static/geojson({{$item.FieldGeometry}})/auto/345x287?access_token={{data.MapBoxAccessToken}}",
-    "comment": "This is an image.  You can see we reference the data payload here to make the image dynamic. Basically any single-statement javascript can be embedded here so long as it resolves to something that can be inserted as text".
-}
-```
-
-```json
-{
-    "style": {
-        "display": "flex",
-        "flexDirection": "column",
-        "padding": 16,
-        "paddingTop": 4
-    },
-    "children": [
-        { 
-            "type":"text",
-            "comment": "text elements can have child text elements so that layout flows together",
-            "children": [
-                { "text": "Hello "},
-                { "text": "World", "style": {"fontWeight":"bold", "color": "blue" } },
-                { "text": "!" }
-            ]
-        },
-        {
-            "comment": "You can provide base 64 data uris for inlining images too", 
-            "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII"
-        }
-    ]
-}
-```
+- [react-pdf](https://react-pdf.org/) — the underlying renderer.
+- [Yoga layout engine](https://yogalayout.com/) — the flexbox implementation react-pdf uses.
+- [PDF format reference](https://en.wikipedia.org/wiki/PDF) — for when you need to understand what's coming out the other end.
