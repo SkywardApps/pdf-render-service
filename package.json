@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@react-pdf/renderer": "^3.4.5",
-    "ajv": "^8.17.1",
+    "ajv": "^8.18.0",
     "axios": "^1.15.2",
     "cors": "^2.8.5",
     "fontkit": "2",
