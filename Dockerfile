@@ -2,10 +2,10 @@
 FROM pdf_base AS pdf_debug
 # This is left empty because compose will mount
 # the main app directory and build at runtime.
-# So do nothing app related as the files won't 
-# be present yet. 
+# So do nothing app related as the files won't
+# be present yet.
 
-FROM node:20.19.5 AS pdf_build
+FROM node:20.19.5 AS pdf_compile
 
 WORKDIR /src
 COPY package.json .
@@ -21,7 +21,20 @@ COPY fonts ./fonts
 
 RUN yarn build
 
-# run node prune
+# Run the test suite. Tests run against the compiled tree before node-prune
+# strips dev dependencies, so vitest, pdfjs-dist, and nock are still available.
+# Failed tests cause this stage to fail; CI builds pdf_test before pdf_release
+# so a regression blocks publish.
+FROM pdf_compile AS pdf_test
+
+COPY vitest.config.ts ./
+COPY test ./test
+
+RUN yarn test:coverage
+
+# Strip dev-only files from node_modules for the release artifact.
+FROM pdf_compile AS pdf_build
+
 RUN npx node-prune
 
 FROM node:20.19.5 AS pdf_release

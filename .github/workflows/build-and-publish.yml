@@ -1,51 +1,70 @@
 name: Build and Publish
 
 on:
-  # run it on push to the default repository branch
   push:
-    branches: 
+    branches:
       - mainline
       - ci
-  # run it during pull request
   pull_request:
-    branches: 
+    branches:
       - '**'
 
 jobs:
-  # define job to build and publish docker image
-  build-and-push-docker-image:
-    name: Build Docker image and push to repositories
-    # run only when code is compiling and tests are passing
+  build:
+    name: Test, build, and (on mainline) publish
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
-    # steps to perform in job
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
-      # setup Docker buld action
       - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
-      - name: Login to Github Packages
-        uses: docker/login-action@v3
+      - name: Build test image (runs vitest suite via pdf_test stage)
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          target: pdf_test
+          load: true
+          tags: pdf-render-service:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Extract coverage report from test image
+        run: |
+          CID=$(docker create pdf-render-service:test)
+          docker cp "$CID:/src/coverage" ./coverage || true
+          docker rm "$CID"
+
+      - name: Upload coverage report artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Login to GitHub Container Registry
+        if: github.ref == 'refs/heads/mainline'
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Build image and push to Docker Hub and GitHub Container Registry
-        uses: docker/build-push-action@v2
+
+      - name: Build and push release image
+        uses: docker/build-push-action@v7
         with:
-          # relative path to the place where source code with Dockerfile is located
           context: .
-          # Note: tags has to be all lower-case
+          target: pdf_release
           tags: |
             ghcr.io/skywardapps/pdf-render-service:latest
             ghcr.io/skywardapps/pdf-render-service:${{ github.sha }}
-          # build on feature branches, push only on main branch
           push: ${{ github.ref == 'refs/heads/mainline' }}
-
-      - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
