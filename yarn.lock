@@ -4599,7 +4599,7 @@ __metadata:
     typescript: ^5.7.2
     uuid: ^9.0.0
     vitest: ^4.1.5
-    vm2: ^3.10.5
+    vm2: ^3.11.4
     winston: ^3.19.0
   languageName: unknown
   linkType: soft
@@ -5985,15 +5985,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vm2@npm:^3.10.5":
-  version: 3.11.2
-  resolution: "vm2@npm:3.11.2"
+"vm2@npm:^3.11.4":
+  version: 3.11.4
+  resolution: "vm2@npm:3.11.4"
   dependencies:
     acorn: ^8.15.0
     acorn-walk: ^8.3.4
   bin:
     vm2: bin/vm2
-  checksum: 8f2064b207d6d97d11be472b1b4365b19546d9a2fc9f3bbade4bb19f70779dd24c2a2cf4afde136bda7e1d2b1bf131fe47187c6417247609de5722dad6d33db6
+  checksum: 86cb47d742f7c6f9a7920fe9e37e2ef8b005d81b2a285663f7c94cd11b6d86cba7e1decfa2929f3dedfd37056cf8fe9df2ff4d4ca1c4a641fa10ce462e004087
   languageName: node
   linkType: hard
 
