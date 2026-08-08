@@ -44,7 +44,7 @@
     "eslint": "^9.17.0",
     "eslint-plugin-react": "^7.37.2",
     "nock": "^14.0.14",
-    "pdfjs-dist": "^5.7.284",
+    "pdfjs-dist": "^6.2.108",
     "ts-json-schema-generator": "^2.3.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.2",
