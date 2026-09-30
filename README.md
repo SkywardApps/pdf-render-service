@@ -2,6 +2,8 @@
 
 A PDF layout and rendering engine — and an HTTP service around it — that turns a JSON request into a PDF binary. Built on [react-pdf](https://react-pdf.org/) and the [Yoga](https://yogalayout.com/) layout engine.
 
+Created by [Nicholas Elliott](https://nicholasmtelliott.com) at Skyward App Company. Maintained by [@NicholasMTElliott](https://github.com/NicholasMTElliott).
+
 ```bash
 yarn && yarn start
 curl -X POST http://localhost:9000/ \
