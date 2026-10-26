@@ -5,7 +5,7 @@
 - **Language**: TypeScript 5.7, `target: ES6`, `module: commonjs`, `strict: true`, `jsx: react`.
 - **Renderer**: `@react-pdf/renderer` ^3.4.5 (Yoga layout under the hood) + `react` 16.12.
 - **Validation**: `ajv` ^8 against a JSON schema generated from TS types via `ts-json-schema-generator`.
-- **Templating sandbox**: `vm2` ^3.10 (`eval:false`, `wasm:false`, 150ms timeout per script).
+- **Templating sandbox**: `vm2` ^3.12 (`eval:false`, `wasm:false`, 150ms timeout per script).
 - **Logging**: `winston` (console at info, file `pdf-renderer.log` at warning).
 - **HTTP**: stdlib `http`, `cors` package present in deps but the routing in [src/Server.ts](src/Server.ts) sets CORS headers manually.
 - **Other**: `axios` (Google Fonts API), `fontkit`, `uuid`.
@@ -15,7 +15,7 @@
 - **Body limit**: 30MB per POST (data-URI inline images can be large). Exceeding this destroys the connection.
 - **Script timeout**: 150ms per `{{...}}` evaluation in vm2.
 - **No in-memory render**: react-pdf forces a tmp-file round-trip (`os.tmpdir()/pdf-renderer/<uuid>.pdf`).
-- **`vm2` is deprecated upstream** — known security history; constrained sandbox config (no eval, no wasm) mitigates but doesn't eliminate. Replacing it would be a non-trivial migration.
+- **`vm2` has a long sandbox-escape history** — upstream ships frequent security releases; keep it on the latest 3.x. Constrained sandbox config (no eval, no wasm) mitigates but doesn't eliminate. Replacing it would be a non-trivial migration.
 
 ## Setup
 ```bash
@@ -47,6 +47,8 @@ Multi-stage Dockerfile in [Dockerfile](Dockerfile):
 - **Default fonts** — Roboto, Teko, and Noto Sans are bundled under [fonts/](fonts/) and registered at module load in [src/fontManagement.ts](src/fontManagement.ts); anything else is fetched from Google Fonts at request time.
 
 ## Dependencies of note
-- `vm2` — sandbox; deprecated, watch for replacement effort.
+- `vm2` — sandbox; frequent security releases, watch for replacement effort.
+- `resolutions.node-gyp` ^12.4 — overrides Yarn's implicit `node-gyp@latest` (pulled in via macOS-only `fsevents`); old 9.x dragged in vulnerable `tar`/`ip`/`http-cache-semantics`. 13.x needs Node ≥22.22.
+- `pdfjs-dist` ~5.5 (test-only PDF reader) — 5.6.83–6.2.107 are vulnerable; 6.2.108+ requires Node ≥22.13, so stay on 5.5 until the Node upgrade.
 - `react` 16 — pinned by react-pdf compatibility; do not upgrade independently.
 - `@react-pdf/types` — drives `Style`, `StandardPageSize`, `Orientation` types referenced from wire definitions.
