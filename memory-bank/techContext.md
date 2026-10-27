@@ -51,6 +51,6 @@ Multi-stage Dockerfile in [Dockerfile](Dockerfile); `.dockerignore` trims the co
 ## Dependencies of note
 - `vm2` — sandbox; frequent security releases, watch for replacement effort.
 - No `resolutions`. Yarn still injects `node-gyp@latest` for `fsevents` (macOS-only); a fresh lockfile resolves 13.x (needs Node ≥22.22), so the old 9.x pin is gone.
-- `pdfjs-dist` ~5.5 (test-only PDF reader) — 5.6.83–6.2.107 are vulnerable; 6.2.108+ requires Node ≥22.13, so stay on 5.5 until the Node upgrade.
+- `pdfjs-dist` ^6.2.108 (test-only PDF reader; 5.6.83–6.2.107 are vulnerable). v6 API: clean up via `loadingTask.destroy()` (no `PDFDocumentProxy.destroy`), no `isEvalSupported` option.
 - `react` 16 — pinned by react-pdf compatibility; do not upgrade independently.
 - `@react-pdf/types` — drives `Style`, `StandardPageSize`, `Orientation` types referenced from wire definitions.

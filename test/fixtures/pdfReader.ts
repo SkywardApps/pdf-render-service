@@ -24,13 +24,14 @@ export async function parsePdf(buffer: Buffer): Promise<ParsedPdf> {
   }
 
   const data = new Uint8Array(buffer);
-  const doc = await getDocument({
+  const loadingTask = getDocument({
     data,
-    isEvalSupported: false,
     useSystemFonts: false,
     disableFontFace: true,
     verbosity: 0,
-  }).promise;
+  });
+  const doc = await loadingTask.promise;
+  const numPages = doc.numPages;
 
   const textPerPage: string[] = [];
   const itemsPerPage: TextItem[][] = [];
@@ -60,10 +61,11 @@ export async function parsePdf(buffer: Buffer): Promise<ParsedPdf> {
     itemsPerPage.push(items);
   }
 
-  await doc.destroy();
+  // pdfjs-dist 6 removed PDFDocumentProxy.destroy(); the loading task owns cleanup.
+  await loadingTask.destroy();
 
   return {
-    numPages: doc.numPages,
+    numPages,
     textPerPage,
     itemsPerPage,
     rawText: textPerPage.join('\n'),
