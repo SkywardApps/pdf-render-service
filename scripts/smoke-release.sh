@@ -35,7 +35,7 @@ docker run -d --name "$NAME" -p "127.0.0.1:${PORT}:9000" "$IMAGE" >/dev/null
 # Health: wait up to 30 s for GET / to answer SUCCESS.
 health=""
 for _ in $(seq 1 60); do
-  health=$(curl -sf "$BASE/" || true)
+  health=$(curl -sf --max-time 10 "$BASE/" || true)
   [ "$health" = "SUCCESS" ] && break
   sleep 0.5
 done
@@ -61,7 +61,7 @@ docker exec "$NAME" sh -c "ls -A '$tmp_dir'" | sort > "$WORK/tmp-before"
 # Sample render (the getting-started example).
 hello='{"title":"Hello World","size":"LETTER","orientation":"portrait","data":{"name":"World"},"pages":[{"type":"page","style":{"padding":36},"children":[{"type":"text","text":"Hello, {{data.name}}!","style":{"fontSize":24}}]}]}'
 for i in 1 2 3; do
-  meta=$(curl -s -o "$WORK/hello.pdf" -w '%{http_code} %{content_type}' \
+  meta=$(curl -s --max-time 10 -o "$WORK/hello.pdf" -w '%{http_code} %{content_type}' \
     -H 'Content-Type: application/json' -d "$hello" "$BASE/")
   code=${meta%% *}
   ctype=${meta#* }
@@ -77,7 +77,7 @@ pass "3 renders returned 200 application/pdf with %PDF- ($(wc -c < "$WORK/hello.
 
 # Bad payload: a child with no type and no discriminator cannot be inferred.
 bad='{"pages":[{"children":[{"type":"view","children":[{}]}]}]}'
-code=$(curl -s -o "$WORK/bad.txt" -w '%{http_code}' -H 'Content-Type: application/json' -d "$bad" "$BASE/")
+code=$(curl -s --max-time 10 -o "$WORK/bad.txt" -w '%{http_code}' -H 'Content-Type: application/json' -d "$bad" "$BASE/")
 [ "$code" = "400" ] || fail "bad payload returned HTTP $code, expected 400"
 pass "bad payload returned 400"
 

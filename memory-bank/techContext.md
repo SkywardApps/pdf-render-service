@@ -10,6 +10,7 @@
 - **HTTP**: stdlib `http`; [src/Server.ts](src/Server.ts) sets CORS headers manually (no `cors` package).
 - **Other**: `axios` (Google Fonts API). `fontkit` comes transitively via `@react-pdf/font`.
 - **Package manager**: Yarn 4.18.1 via corepack (`packageManager` field; no committed `.yarn/releases`). `yarn npm audit --all --recursive` works.
+- **Next Node major**: Node 25+ official images/binaries no longer bundle corepack. Moving past Node 24 needs `npm i -g corepack` before `corepack enable` (Dockerfile, compose, CI lint job) or a committed Yarn release (`yarnPath`).
 
 ## Constraints
 - **Body limit**: 30MB per POST (data-URI inline images can be large). Exceeding this destroys the connection.
@@ -44,7 +45,7 @@ Multi-stage Dockerfile in [Dockerfile](Dockerfile); `.dockerignore` trims the co
 - `pdf_release` (`node:24.22.1-slim`) runs as non-root `nodeuser`, exposes port 9000, entrypoint `node dist/index.js`.
 
 ## CI
-`.github/workflows/build-and-publish.yml`: `lint` job (setup-node from `.nvmrc`, corepack, `yarn lint`; not a publish gate) + `build` job (Docker `pdf_test` → `pdf_release` loaded locally → `scripts/smoke-release.sh` (health, sample render, 400 on bad payload, non-root, Node v24, no new temp files) → push to ghcr only on `mainline`, same gha cache). PR runs cancel superseded runs; mainline/ci runs are never cancelled. Dependabot (`.github/dependabot.yml`) groups minor/patch and majors (dev vs prod) separately; react/@react-pdf/@types/node majors ignored.
+`.github/workflows/build-and-publish.yml`: `lint` job (setup-node from `.nvmrc`, corepack, `yarn lint`; `build` has `needs: lint`, so lint gates publish) + `build` job (Docker `pdf_test` → `pdf_release` loaded locally → `scripts/smoke-release.sh` (health, sample render, 400 on bad payload, non-root, Node v24, no new temp files) → on `mainline` only: `docker tag` + `docker push --all-tags` of that same smoke-tested image (no rebuild)). PR runs cancel superseded runs; mainline/ci runs are never cancelled. Dependabot (`.github/dependabot.yml`) groups minor/patch and majors (dev vs prod) separately; react/@react-pdf/@types/node majors ignored.
 
 ## Tooling Patterns
 - **Schema-from-types** — `PdfRequest.ts` is the source of truth; `PdfRequest.json` is generated. Don't hand-edit the JSON.
