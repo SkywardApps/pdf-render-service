@@ -7,8 +7,8 @@
 - **Validation**: `ajv` ^8 against a JSON schema generated from TS types via `ts-json-schema-generator`.
 - **Templating sandbox**: `vm2` ^3.12 (`eval:false`, `wasm:false`, 150ms timeout per script).
 - **Logging**: `winston` (console at info, file `pdf-renderer.log` at warning).
-- **HTTP**: stdlib `http`, `cors` package present in deps but the routing in [src/Server.ts](src/Server.ts) sets CORS headers manually.
-- **Other**: `axios` (Google Fonts API), `fontkit`, `uuid`.
+- **HTTP**: stdlib `http`; [src/Server.ts](src/Server.ts) sets CORS headers manually (no `cors` package).
+- **Other**: `axios` (Google Fonts API), `uuid`. `fontkit` comes transitively via `@react-pdf/font`.
 - **Package manager**: Yarn 4.18.1 via corepack (`packageManager` field; no committed `.yarn/releases`). `yarn npm audit --all --recursive` works.
 
 ## Constraints
@@ -37,10 +37,11 @@ Default port: `9000`, override via `PORT`.
 - `VALIDATEAPIPAYLOADS` — set to `strict` to force ajv validation on every request (otherwise per-request `strict: true` opts in).
 
 ## Deployment
-Multi-stage Dockerfile in [Dockerfile](Dockerfile):
-- `pdf_debug` extends a base image and is intended for compose-mounted dev.
-- `pdf_build` installs immutable deps, builds, runs `node-prune`.
-- `pdf_release` runs as non-root `nodeuser`, exposes port 9000, entrypoint `node dist/index.js`.
+Multi-stage Dockerfile in [Dockerfile](Dockerfile); `.dockerignore` trims the context:
+- `pdf_compile` (`node:24.22.1`, `corepack enable`) installs immutable deps, builds.
+- `pdf_test` runs `yarn test:coverage`; CI builds it before release.
+- `pdf_build` runs `yarn workspaces focus --production` (drops dev deps).
+- `pdf_release` (`node:24.22.1-slim`) runs as non-root `nodeuser`, exposes port 9000, entrypoint `node dist/index.js`.
 
 ## Tooling Patterns
 - **Schema-from-types** — `PdfRequest.ts` is the source of truth; `PdfRequest.json` is generated. Don't hand-edit the JSON.
