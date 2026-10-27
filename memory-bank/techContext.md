@@ -44,7 +44,7 @@ Multi-stage Dockerfile in [Dockerfile](Dockerfile); `.dockerignore` trims the co
 - `pdf_release` (`node:24.22.1-slim`) runs as non-root `nodeuser`, exposes port 9000, entrypoint `node dist/index.js`.
 
 ## CI
-`.github/workflows/build-and-publish.yml`: `lint` job (setup-node from `.nvmrc`, corepack, `yarn lint`; not a publish gate) + `build` job (Docker `pdf_test`, then `pdf_release`; pushes to ghcr only on `mainline`). PR runs cancel superseded runs; mainline/ci runs are never cancelled. Dependabot (`.github/dependabot.yml`) groups minor/patch and majors (dev vs prod) separately; react/@react-pdf/@types/node majors ignored.
+`.github/workflows/build-and-publish.yml`: `lint` job (setup-node from `.nvmrc`, corepack, `yarn lint`; not a publish gate) + `build` job (Docker `pdf_test` → `pdf_release` loaded locally → `scripts/smoke-release.sh` (health, sample render, 400 on bad payload, non-root, Node v24, no new temp files) → push to ghcr only on `mainline`, same gha cache). PR runs cancel superseded runs; mainline/ci runs are never cancelled. Dependabot (`.github/dependabot.yml`) groups minor/patch and majors (dev vs prod) separately; react/@react-pdf/@types/node majors ignored.
 
 ## Tooling Patterns
 - **Schema-from-types** — `PdfRequest.ts` is the source of truth; `PdfRequest.json` is generated. Don't hand-edit the JSON.
