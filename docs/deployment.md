@@ -4,13 +4,16 @@ The service is a single Node process with no external dependencies (other than t
 
 ## Docker
 
-The [Dockerfile](../Dockerfile) defines three stages:
+The [Dockerfile](../Dockerfile) defines four stages:
 
 | Stage         | Purpose                                                                                  |
 | ------------- | ---------------------------------------------------------------------------------------- |
-| `pdf_debug`   | Empty stage extending a `pdf_base` image. Intended for `docker compose` mounts in dev. The host project is mounted at runtime, so the image itself stays empty. |
-| `pdf_build`   | Installs deps with `yarn --immutable`, copies `src/` and `fonts/`, runs `yarn build`, then runs `node-prune` to strip dev-only files from `node_modules`. |
-| `pdf_release` | The final stage. Creates a non-privileged `nodeuser`, copies `dist/`, `fonts/`, and `node_modules/` from `pdf_build`. Exposes port 9000. Entrypoint is `node dist/index.js`. |
+| `pdf_compile` | Node 24 with corepack-provided Yarn 4. Installs all deps with `yarn --immutable`, copies `src/` and `fonts/`, runs `yarn build`. |
+| `pdf_test`    | Extends `pdf_compile`, adds `test/` and runs `yarn test:coverage`. CI builds it first, so a failing test blocks the release image. |
+| `pdf_build`   | Extends `pdf_compile` and runs `yarn workspaces focus --production`, which drops dev dependencies from `node_modules`. |
+| `pdf_release` | The final stage, on `node:24-slim`. Creates a non-privileged `nodeuser`, copies `dist/`, `fonts/`, and `node_modules/` from `pdf_build`. Exposes port 9000. Entrypoint is `node dist/index.js`. |
+
+`.dockerignore` keeps local `node_modules/`, `dist/`, coverage output and docs out of the build context.
 
 ### Building
 
@@ -48,7 +51,7 @@ In Docker, the file lives in `/app/pdf-renderer.log`. Mount a volume there if yo
 ## Resource considerations
 
 - **Body cap**: 30 MB per request, enforced in [src/PdfController.ts](../src/PdfController.ts). Tune by editing the constant; raising it makes flood mitigation weaker.
-- **Tmp files**: each render writes a `<uuid>.pdf` into `${tmpdir()}/pdf-renderer/` and reads it back. The service does not currently delete these — clean up via container restarts or a periodic sweep on long-lived hosts.
+- **No temp files**: each PDF is rendered into an in-memory buffer and sent straight back; nothing is written to disk.
 - **Memory**: large `data` payloads, large inline images, and big text trees all live in memory simultaneously. Under load, give the container enough headroom to absorb a 30 MB request plus working memory for layout.
 
 ## Security notes

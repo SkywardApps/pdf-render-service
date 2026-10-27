@@ -4,8 +4,8 @@ This guide gets you from a fresh clone to a working PDF response in a few minute
 
 ## Prerequisites
 
-- **Node.js 20.x** (the project pins 20.18.1 via Volta; the Docker image runs 20.19.5).
-- **Yarn 3 (Berry)** — `package.json` declares `packageManager: yarn@3.6.1`.
+- **Node.js 24** (`.nvmrc` says `24`; Volta and the Docker images pin 24.22.1).
+- **Yarn 4**, provided by [corepack](https://nodejs.org/api/corepack.html). `package.json` pins the exact version in its `packageManager` field, so run `corepack enable` once and `yarn` picks the right version.
 - A **Google Fonts API key** if you intend to use any font outside the bundled defaults (Roboto, Teko, Noto Sans). See [fonts.md](fonts.md).
 
 ## Install
@@ -13,6 +13,7 @@ This guide gets you from a fresh clone to a working PDF response in a few minute
 ```bash
 git clone <this repo>
 cd pdf-render-service
+corepack enable
 yarn
 ```
 

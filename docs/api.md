@@ -103,7 +103,7 @@ When validation fails, the response is `400` with a plaintext body containing th
 | ------ | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | `400`  | Schema validation failed (when strict).                                                                       | `The request was not valid: <ajv errors json>.`                               |
 | `400`  | Element-tree generation threw an `Error` (e.g. unknown element type, font lookup failed, template threw).     | `Error (<name>) rendering the file: <message>\nRender Stack: <breadcrumb>`    |
-| `500`  | `react-pdf` rendering threw, or the temp file could not be read back.                                         | `Error rendering the file: <error>.`                                          |
+| `500`  | `react-pdf` rendering threw.                                                                                  | `Error rendering the file: <error>.`                                          |
 | `404`  | Any request that isn't `OPTIONS`, `GET /`, `GET /fonts`, or `POST /`.                                         | empty                                                                         |
 
 ### Render-stack breadcrumb

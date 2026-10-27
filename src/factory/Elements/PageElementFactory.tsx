@@ -4,7 +4,6 @@ import { IElementContext } from '../IElementContext';
 import { Page } from '@react-pdf/renderer';
 import React from 'react';
 import { ILogger } from '../../ILogger';
-import { v4 } from 'uuid';
 import {
   PageSize,
   Orientation
@@ -37,13 +36,12 @@ export const createPageElement = async (element: PageElementDeclaration, factory
     logger.debug('<Page> Creating new page.')
     return (
         <Page 
-            key={v4()} 
             style={finalStyle} 
             size={size} 
             orientation={orientation} 
             wrap={true}
             debug={context.config.debug} >
-        {renderedChildren}
+        {React.Children.toArray(renderedChildren)}
         </Page>
     );
 };

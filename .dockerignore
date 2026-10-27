@@ -1,0 +1,15 @@
+# The Dockerfile copies only what it needs; this keeps the build context small
+# and keeps local installs and build output out of it.
+.git
+node_modules
+dist
+coverage
+.yarn/cache
+.yarn/install-state.gz
+.yarn/unplugged
+*.log
+.vscode
+.github
+docs
+memory-bank
+assets

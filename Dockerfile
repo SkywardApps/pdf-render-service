@@ -1,11 +1,8 @@
-# Build another image that's just for debugging.
-FROM pdf_base AS pdf_debug
-# This is left empty because compose will mount
-# the main app directory and build at runtime.
-# So do nothing app related as the files won't
-# be present yet.
+FROM node:24.22.1 AS pdf_compile
 
-FROM node:20.20.2 AS pdf_compile
+# Yarn comes from corepack, pinned by the packageManager field in package.json.
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+RUN corepack enable
 
 WORKDIR /src
 COPY package.json .
@@ -13,7 +10,6 @@ COPY yarn.lock .
 COPY eslint.config.js .
 COPY tsconfig.json .
 COPY .yarnrc.yml .
-COPY .yarn ./.yarn
 RUN yarn --immutable
 
 COPY src ./src
@@ -21,8 +17,8 @@ COPY fonts ./fonts
 
 RUN yarn build
 
-# Run the test suite. Tests run against the compiled tree before node-prune
-# strips dev dependencies, so vitest, pdfjs-dist, and nock are still available.
+# Run the test suite. Tests run in the full install, before pdf_build drops
+# dev dependencies, so vitest, pdfjs-dist, and nock are still available.
 # Failed tests cause this stage to fail; CI builds pdf_test before pdf_release
 # so a regression blocks publish.
 FROM pdf_compile AS pdf_test
@@ -32,26 +28,19 @@ COPY test ./test
 
 RUN yarn test:coverage
 
-# Strip dev-only files from node_modules for the release artifact.
+# Reduce node_modules to production dependencies for the release artifact.
 FROM pdf_compile AS pdf_build
 
-RUN npx node-prune
+RUN yarn workspaces focus --production
 
-FROM node:20.20.2 AS pdf_release
+FROM node:24.22.1-slim AS pdf_release
 
-# Run everything after as non-privileged user.
-RUN install -m 775 -d /usr/src/app
 WORKDIR /app
 EXPOSE 9000
 
-# create a new user and change directory ownership
-RUN adduser --disabled-password \
-  --home /app \
-  --gecos '' nodeuser && chown -R nodeuser /app
-
-# impersonate into the new user
+# Run as a non-privileged user that owns /app.
+RUN useradd --home-dir /app --no-create-home nodeuser && chown nodeuser /app
 USER nodeuser
-WORKDIR /app
 
 COPY --from=pdf_build /src/dist ./dist
 COPY --from=pdf_build /src/fonts ./fonts

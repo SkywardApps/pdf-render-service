@@ -1,7 +1,12 @@
 {
-  "name": "pdfengine",
+  "name": "pdf-render-service",
   "version": "0.1.0",
-  "main": "index.js",
+  "description": "HTTP service that renders PDFs from a JSON layout and data payload, built on react-pdf.",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SkywardApps/pdf-render-service.git"
+  },
   "author": "Nicholas Elliott",
   "license": "MIT",
   "private": true,
@@ -23,19 +28,13 @@
     "@react-pdf/renderer": "^3.4.5",
     "ajv": "^8.18.0",
     "axios": "^1.20.0",
-    "cors": "^2.8.5",
-    "fontkit": "2",
-    "fonts": "^0.0.2",
     "react": "^16.12.0",
-    "uuid": "^11.1.1",
     "vm2": "^3.12.2",
     "winston": "^3.19.0"
   },
   "devDependencies": {
-    "@types/fontkit": "^2.0.8",
-    "@types/node": "^20.19.25",
+    "@types/node": "^24.0.0",
     "@types/react": "^16.9.12",
-    "@types/request": "^2.48.13",
     "@typescript-eslint/eslint-plugin": "^8.59.2",
     "@typescript-eslint/parser": "^8.59.2",
     "@vitest/coverage-v8": "^4.1.12",
@@ -43,18 +42,18 @@
     "eslint": "^9.17.0",
     "eslint-plugin-react": "^7.37.2",
     "nock": "^14.0.14",
-    "pdfjs-dist": "~5.5.207",
+    "pdfjs-dist": "^6.2.108",
     "ts-json-schema-generator": "^2.3.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.2",
     "vitest": "^4.1.12"
   },
-  "resolutions": {
-    "node-gyp": "^12.4.0"
-  },
   "volta": {
-    "node": "20.18.1",
-    "yarn": "3.6.1"
+    "node": "24.22.1",
+    "yarn": "4.18.1"
   },
-  "packageManager": "yarn@3.6.1"
+  "packageManager": "yarn@4.18.1+sha512.b2e1e7524f654f2749d32b4ebcb4622473cb5bcbc485df2007e12a154e50162a4d795526768bc5f5b8f81717bfd79deb2472813d86fb5ae2eb551fa9c872b08f",
+  "engines": {
+    "node": ">=24"
+  }
 }

@@ -101,7 +101,7 @@ export class ElementFactory implements IElementContext, IElementFactory
 
     try{
       return (
-        <Document title={title}>{pages}</Document>
+        <Document title={title}>{React.Children.toArray(pages)}</Document>
       );
     }
     catch(err)
