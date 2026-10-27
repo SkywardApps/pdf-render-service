@@ -14,7 +14,7 @@
 ## Constraints
 - **Body limit**: 30MB per POST (data-URI inline images can be large). Exceeding this destroys the connection.
 - **Script timeout**: 150ms per `{{...}}` evaluation in vm2.
-- **No in-memory render**: react-pdf forces a tmp-file round-trip (`os.tmpdir()/pdf-renderer/<uuid>.pdf`).
+- **In-memory render**: whole PDF is buffered before sending (no streaming, no tmp files).
 - **`vm2` has a long sandbox-escape history** — upstream ships frequent security releases; keep it on the latest 3.x. Constrained sandbox config (no eval, no wasm) mitigates but doesn't eliminate. Replacing it would be a non-trivial migration.
 
 ## Setup

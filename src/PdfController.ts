@@ -1,17 +1,9 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import ReactPDF from '@react-pdf/renderer';
+import { renderToBuffer } from '@react-pdf/renderer';
 import { PdfRequest } from './wire/PdfRequest';
 import { ElementFactory } from './factory/ElementFactory';
-import { v4 } from 'uuid';
-import fs from 'fs';
-import path from 'path';
-import {tmpdir} from 'os';
-import {promisify} from 'util';
 import { ILogger } from './ILogger';
 import { validatePdfRequest } from './validatePdfRequest';
-
-// We prefer async-await where we can
-const mkdir = promisify(fs.mkdir);
 
 /// This represents the handling of incoming PDF creation requests
 export class PdfController
@@ -63,26 +55,6 @@ export class PdfController
             end = Date.now();
             this.logger.info(`${(end-start)/1000} Validated request POST ${this.request.url}`);
 
-            // Create a temporary folder for our output, if needed
-            const tmpPath = path.normalize(`${tmpdir()}/pdf-renderer`)
-            try{
-                await mkdir(tmpPath, { recursive: true });
-            }
-            catch(err)
-            {
-                // We get an exception if the directory already exists, but this
-                // is the only safe way to handle it.  If we check if it exists before, there's
-                // no guarantee that won't change anyway, so we'd still have to handle this
-                // error.
-                const errAny = err as any;
-                if(errAny?.code !== 'EEXIST')
-                    throw err;
-            }
-
-            // Generate a random name in our tmp directory for this PDF
-            const pathname = path.normalize(`${tmpPath}/${v4()}.pdf`);
-            this.logger.info(`Writing to ${pathname}`);
-
             let rootNode:React.ReactElement|null = null;
             start = Date.now();
             // server code
@@ -116,12 +88,12 @@ export class PdfController
                 return;
             }
 
+            let pdfBytes: Buffer;
             try {
                 start = Date.now();
-                // Turn this react element tree into an actual PDF file
-                // There doesn't seem to be an in-memory version of this, so
-                // write it to the disk and then return the file on-disk to the client
-                await ReactPDF.render(rootNode, pathname);
+                // Turn this react element tree into the PDF bytes in memory, so
+                // nothing is written to disk.
+                pdfBytes = await renderToBuffer(rootNode);
                 end = Date.now();
                 this.logger.info(`${(end-start)/1000} Rendered request POST ${this.request.url}` );
             }
@@ -139,51 +111,15 @@ export class PdfController
             }
 
             start = Date.now();
-            // Now that it's written to disk, we have to read it back
-            fs.readFile(pathname, (err, data) => {
-                try{
-                    // If there was an error reading, pass it back.  We do a 500 error here
-                    // rather than Skyward's standard API response because the normal path
-                    // returns file bytes, not an API response, so the client would have a
-                    // hard time distinguishing.
-                    if (err) {
-                        this.logger.error(err);
-                        this.res.statusCode = 500;
-                        this.res.end(`Error getting the file: ${err}.`);
-                        return;
-                    }
-                    else {
-                        // Set the filename to be the title, getting rid of invalid characters
-                        const safeFileName = factory.finalizeString(postBody.title ?? 'document').replace(/[^A-Za-z0-9_.-]/g, '_');
-                        // set Content-type and send data
-                        this.res.setHeader('Content-type', 'application/pdf');
-                        this.res.setHeader('Content-disposition', `attachment; filename="${safeFileName}.pdf"`);
-                        this.logger.info(`Setting filename to ${safeFileName}`)
-                        this.res.end(data);
-                        end = Date.now();
-                        this.logger.info(`${(end-start)/1000} Transmitted request POST ${this.request.url}` );
-                        return;
-                    }
-                }
-                catch(e)
-                {
-                    // If there was an error in the responding code, instead send an error.
-                    // There's a possibility this will be invalid if for some reason we get part way
-                    // through responding above.
-                    const errAny = e as any;
-                    this.logger.error(errAny);
-                    this.res.statusCode = 500;
-                    if(errAny.toString)
-                    {
-                        this.res.end(`Error getting the file: ${errAny.toString()}.`);
-                    }
-                    else
-                    {
-                        this.res.end(`Error getting the file: ${errAny}.`);
-                    }
-                    return;
-                }
-            });
+            // Set the filename to be the title, getting rid of invalid characters
+            const safeFileName = factory.finalizeString(postBody.title ?? 'document').replace(/[^A-Za-z0-9_.-]/g, '_');
+            // set Content-type and send data
+            this.res.setHeader('Content-type', 'application/pdf');
+            this.res.setHeader('Content-disposition', `attachment; filename="${safeFileName}.pdf"`);
+            this.logger.info(`Setting filename to ${safeFileName}`)
+            this.res.end(pdfBytes);
+            end = Date.now();
+            this.logger.info(`${(end-start)/1000} Transmitted request POST ${this.request.url}` );
         }
         catch(e)
         {

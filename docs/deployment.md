@@ -51,7 +51,7 @@ In Docker, the file lives in `/app/pdf-renderer.log`. Mount a volume there if yo
 ## Resource considerations
 
 - **Body cap**: 30 MB per request, enforced in [src/PdfController.ts](../src/PdfController.ts). Tune by editing the constant; raising it makes flood mitigation weaker.
-- **Tmp files**: each render writes a `<uuid>.pdf` into `${tmpdir()}/pdf-renderer/` and reads it back. The service does not currently delete these — clean up via container restarts or a periodic sweep on long-lived hosts.
+- **No temp files**: each PDF is rendered into an in-memory buffer and sent straight back; nothing is written to disk.
 - **Memory**: large `data` payloads, large inline images, and big text trees all live in memory simultaneously. Under load, give the container enough headroom to absorb a 30 MB request plus working memory for layout.
 
 ## Security notes
