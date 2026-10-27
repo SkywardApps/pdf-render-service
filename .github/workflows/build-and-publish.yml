@@ -44,6 +44,8 @@ jobs:
 
   build:
     name: Test, build, and (on mainline) publish
+    # Lint must pass before anything is built or published.
+    needs: lint
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -103,16 +105,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Same target and cache as the smoke-tested build, so this is a cache hit.
+      # Publish the exact image the smoke test ran against: tag it and push it,
+      # rather than building it a second time.
       - name: Push release image
         if: github.ref == 'refs/heads/mainline'
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          target: pdf_release
-          tags: |
-            ghcr.io/skywardapps/pdf-render-service:latest
-            ghcr.io/skywardapps/pdf-render-service:${{ github.sha }}
-          push: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+        env:
+          REPO: ghcr.io/skywardapps/pdf-render-service
+          SHA: ${{ github.sha }}
+        run: |
+          docker tag pdf-render-service:release "$REPO:latest"
+          docker tag pdf-render-service:release "$REPO:$SHA"
+          docker push --all-tags "$REPO"
