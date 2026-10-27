@@ -1,33 +1,50 @@
-# Dependabot configuration - Security-focused updates
+# Dependabot configuration
 # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+#
+# Minor and patch updates arrive as one grouped PR per ecosystem. Major
+# updates are no longer ignored: they arrive in their own grouped PRs
+# (dev tooling separate from runtime dependencies) so each can be reviewed
+# and tested on its own. Security updates are not grouped.
 
 version: 2
 updates:
-  # Yarn package updates (security-focused)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    # Limit open PRs to reduce noise
-    open-pull-requests-limit: 3
-    # Add labels to PRs
+    open-pull-requests-limit: 5
     labels:
       - "dependencies"
       - "automated"
-    # Rebase strategy
     rebase-strategy: "auto"
-    # Commit message prefix
     commit-message:
       prefix: "chore"
       include: "scope"
-    # Ignore major version updates to prevent aggressive changes
+    groups:
+      npm-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+      npm-major-dev:
+        dependency-type: "development"
+        update-types: ["major"]
+      npm-major-prod:
+        dependency-type: "production"
+        update-types: ["major"]
     ignore:
-      - dependency-name: "*"
+      # React, its types and react-pdf move together (react-pdf 4 / React 19
+      # is a planned migration). Remove these when that work starts.
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@react-pdf/renderer"
+        update-types: ["version-update:semver-major"]
+      # @types/node tracks the Node runtime major (see .nvmrc / Dockerfile).
+      - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]
 
-  # Docker updates (pinned to Node 20.x)
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
@@ -41,17 +58,17 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
-    # Pin to Node 20.x - prevent jumping to Node 21, 22, etc.
     ignore:
+      # Node majors are a deliberate migration: move the Dockerfile,
+      # docker-compose.test.yml, .nvmrc, Volta, engines and @types/node
+      # together, onto an LTS line.
       - dependency-name: "node"
         update-types: ["version-update:semver-major"]
 
-  # GitHub Actions updates
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "monthly"
-      day: "monday"
       time: "09:00"
     labels:
       - "dependencies"
@@ -60,7 +77,6 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
-    # Limit major version updates for actions too
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+    groups:
+      github-actions:
+        patterns: ["*"]
