@@ -4,7 +4,6 @@ import { IElementContext } from '../IElementContext';
 import { View } from '@react-pdf/renderer';
 import React from 'react';
 import { ILogger } from '../../ILogger';
-import { v4 } from 'uuid';
 import { finalizeBoolean } from '../../helpers/FinalizeHelpers';
 import { createElementKey } from '../createElementKey';
 
@@ -35,8 +34,8 @@ export const createViewElement = async (element: ViewElementDeclaration, factory
   }
 
   return (
-    <View key={v4()} style={finalStyle} wrap={canWrap} break={mustBreak} debug={context.config.debug || debug} fixed={isFixed}>
-      {renderedChildren}
+    <View style={finalStyle} wrap={canWrap} break={mustBreak} debug={context.config.debug || debug} fixed={isFixed}>
+      {React.Children.toArray(renderedChildren)}
     </View>
   );
 };

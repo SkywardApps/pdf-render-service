@@ -8,7 +8,7 @@
 - **Templating sandbox**: `vm2` ^3.12 (`eval:false`, `wasm:false`, 150ms timeout per script).
 - **Logging**: `winston` (console at info, file `pdf-renderer.log` at warning).
 - **HTTP**: stdlib `http`; [src/Server.ts](src/Server.ts) sets CORS headers manually (no `cors` package).
-- **Other**: `axios` (Google Fonts API), `uuid`. `fontkit` comes transitively via `@react-pdf/font`.
+- **Other**: `axios` (Google Fonts API). `fontkit` comes transitively via `@react-pdf/font`.
 - **Package manager**: Yarn 4.18.1 via corepack (`packageManager` field; no committed `.yarn/releases`). `yarn npm audit --all --recursive` works.
 
 ## Constraints

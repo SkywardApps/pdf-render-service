@@ -53,7 +53,7 @@ export const createListElement = async (element: ListElementDeclaration, factory
     return (
         <>
             {headerElement}
-            {innerElements}
+            {React.Children.toArray(innerElements)}
             {footerElement}
         </>
     );

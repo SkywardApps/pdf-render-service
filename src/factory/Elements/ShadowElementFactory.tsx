@@ -4,7 +4,6 @@ import { IElementContext } from '../IElementContext';
 import { View, Text } from '@react-pdf/renderer';
 import React from 'react';
 import { ILogger } from '../../ILogger';
-import { v4 } from 'uuid';
 import { finalizeBoolean } from '../../helpers/FinalizeHelpers';
 
 
@@ -34,7 +33,6 @@ export const createShadowElement = async (element: TextElementDeclaration, facto
     //   slightly and make dark and transparent (per the 'shadow' properties)
     return (
         <View
-            key={v4()}
             style={finalStyle}
             wrap={canWrap}
             fixed={isFixed}

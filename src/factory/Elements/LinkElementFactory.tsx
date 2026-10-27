@@ -4,7 +4,6 @@ import { IElementContext } from '../IElementContext';
 import { Link, Text } from '@react-pdf/renderer';
 import React from 'react';
 import { ILogger } from '../../ILogger';
-import { v4 } from 'uuid';
 import { finalizeBoolean } from '../../helpers/FinalizeHelpers';
 import { createElementKey } from '../createElementKey';
 
@@ -42,13 +41,12 @@ export const createLinkElement = async (element: LinkElementDeclaration, factory
 
   return (
     <Link
-      key={v4()}
       style={finalStyle}
       wrap={canWrap}
       debug={context.config.debug || debug}
       fixed={isFixed}
       break={mustBreak}
       src={finalHref}
-    >{renderedChildren}</Link>
+    >{React.Children.toArray(renderedChildren)}</Link>
   );
 };

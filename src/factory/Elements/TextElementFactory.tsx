@@ -4,7 +4,6 @@ import { IElementContext } from '../IElementContext';
 import { Text } from '@react-pdf/renderer';
 import React from 'react';
 import { ILogger } from '../../ILogger';
-import { v4 } from 'uuid';
 import { finalizeBoolean } from '../../helpers/FinalizeHelpers';
 import { createElementKey } from '../createElementKey';
 
@@ -43,21 +42,19 @@ export const createTextElement = async (element: TextElementDeclaration, factory
     }
 
     return <Text
-      key={v4()}
       style={finalStyle}
       wrap={canWrap}
       debug={context.config.debug || debug}
       fixed={isFixed}
       break={mustBreak}
     >
-      {renderedChildren}
+      {React.Children.toArray(renderedChildren)}
     </Text>;
   }
 
   const preRendered = context.shouldPrerender() ? renderFunction({pageNumber:100, totalPages:100}) : undefined;
   return (
     <Text
-      key={v4()}
       style={finalStyle}
       wrap={canWrap}
       debug={context.config.debug || debug}

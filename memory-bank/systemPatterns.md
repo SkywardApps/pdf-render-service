@@ -13,6 +13,7 @@ Single-process Node HTTP server. No framework — raw `http.createServer`. Three
 - **vm2 sandbox for templating** — `{{...}}` first tries a fast regex dereference; if anything remains, evaluate via vm2 with `eval:false`, `wasm:false`, 150ms timeout.
 - **Two-stage scope** — global config + a stack of local scopes (pushed/popped by list elements via `pushData`/`popData` on the factory). `$item` and friends live in the top frame.
 - **In-memory render** — named export `renderToBuffer` (not on react-pdf 3's default export); no disk I/O, no tmp files. `test/contract/tempFiles.test.ts` guards this.
+- **React keys** — factories set no keys; each parent wraps its child array in `React.Children.toArray` (index keys; children are built in declaration order). No random keys.
 - **Render stack on errors** — `createElementKey` builds a breadcrumb; thrown errors get a `renderStack` array attached and surfaced in the 400 response.
 
 ## Component Relationships
