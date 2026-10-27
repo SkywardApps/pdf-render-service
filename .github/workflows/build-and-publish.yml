@@ -66,7 +66,7 @@ jobs:
           load: true
           tags: pdf-render-service:test
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: type=gha,mode=max,ignore-error=true
 
       - name: Extract coverage report from test image
         run: |
@@ -91,7 +91,7 @@ jobs:
           load: true
           tags: pdf-render-service:release
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: type=gha,mode=max,ignore-error=true
 
       # Runs before any push, so an image that fails it never publishes.
       - name: Smoke-test release image
