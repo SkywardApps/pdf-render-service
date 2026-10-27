@@ -5,7 +5,11 @@ FROM pdf_base AS pdf_debug
 # So do nothing app related as the files won't
 # be present yet.
 
-FROM node:20.20.2 AS pdf_compile
+FROM node:24.22.1 AS pdf_compile
+
+# Yarn comes from corepack, pinned by the packageManager field in package.json.
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+RUN corepack enable
 
 WORKDIR /src
 COPY package.json .
@@ -13,7 +17,6 @@ COPY yarn.lock .
 COPY eslint.config.js .
 COPY tsconfig.json .
 COPY .yarnrc.yml .
-COPY .yarn ./.yarn
 RUN yarn --immutable
 
 COPY src ./src
@@ -37,7 +40,7 @@ FROM pdf_compile AS pdf_build
 
 RUN npx node-prune
 
-FROM node:20.20.2 AS pdf_release
+FROM node:24.22.1 AS pdf_release
 
 # Run everything after as non-privileged user.
 RUN install -m 775 -d /usr/src/app

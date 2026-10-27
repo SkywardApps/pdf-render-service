@@ -1,7 +1,7 @@
 # Tech Context
 
 ## Stack
-- **Runtime**: Node.js 20.19.5 (Volta pins 20.18.1 for local dev).
+- **Runtime**: Node.js 24 (Docker + Volta pin 24.22.1; `.nvmrc` = `24`; `engines.node` `>=24`).
 - **Language**: TypeScript 5.7, `target: ES6`, `module: commonjs`, `strict: true`, `jsx: react`.
 - **Renderer**: `@react-pdf/renderer` ^3.4.5 (Yoga layout under the hood) + `react` 16.12.
 - **Validation**: `ajv` ^8 against a JSON schema generated from TS types via `ts-json-schema-generator`.
@@ -9,7 +9,7 @@
 - **Logging**: `winston` (console at info, file `pdf-renderer.log` at warning).
 - **HTTP**: stdlib `http`, `cors` package present in deps but the routing in [src/Server.ts](src/Server.ts) sets CORS headers manually.
 - **Other**: `axios` (Google Fonts API), `fontkit`, `uuid`.
-- **Package manager**: yarn 3.6.1 (Berry).
+- **Package manager**: Yarn 4.18.1 via corepack (`packageManager` field; no committed `.yarn/releases`). `yarn npm audit --all --recursive` works.
 
 ## Constraints
 - **Body limit**: 30MB per POST (data-URI inline images can be large). Exceeding this destroys the connection.
@@ -19,7 +19,8 @@
 
 ## Setup
 ```bash
-yarn                # install (yarn 3, immutable in CI)
+corepack enable     # once; provides the pinned Yarn 4
+yarn                # install (immutable in Docker/CI)
 yarn start          # ts-node-dev with auto-respawn
 yarn build          # tsc → ./dist
 yarn release        # build + run compiled output
@@ -48,7 +49,7 @@ Multi-stage Dockerfile in [Dockerfile](Dockerfile):
 
 ## Dependencies of note
 - `vm2` — sandbox; frequent security releases, watch for replacement effort.
-- `resolutions.node-gyp` ^12.4 — overrides Yarn's implicit `node-gyp@latest` (pulled in via macOS-only `fsevents`); old 9.x dragged in vulnerable `tar`/`ip`/`http-cache-semantics`. 13.x needs Node ≥22.22.
+- No `resolutions`. Yarn still injects `node-gyp@latest` for `fsevents` (macOS-only); a fresh lockfile resolves 13.x (needs Node ≥22.22), so the old 9.x pin is gone.
 - `pdfjs-dist` ~5.5 (test-only PDF reader) — 5.6.83–6.2.107 are vulnerable; 6.2.108+ requires Node ≥22.13, so stay on 5.5 until the Node upgrade.
 - `react` 16 — pinned by react-pdf compatibility; do not upgrade independently.
 - `@react-pdf/types` — drives `Style`, `StandardPageSize`, `Orientation` types referenced from wire definitions.
