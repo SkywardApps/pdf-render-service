@@ -1,4 +1,4 @@
-FROM node:24.22.1 AS pdf_compile
+FROM node:24.22.2 AS pdf_compile
 
 # Yarn comes from corepack, pinned by the packageManager field in package.json.
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
@@ -33,7 +33,7 @@ FROM pdf_compile AS pdf_build
 
 RUN yarn workspaces focus --production
 
-FROM node:24.22.1-slim AS pdf_release
+FROM node:24.22.2-slim AS pdf_release
 
 WORKDIR /app
 EXPOSE 9000
